@@ -1,7 +1,6 @@
 import { Hono } from "hono";
 import { cors } from "hono/cors";
 import { authRoute } from "./controllers/authController";
-import { getCookie, setCookie, deleteCookie } from "hono/cookie";
 import { CookieStore, sessionMiddleware } from "hono-sessions";
 import type { AppBindings } from "./env";
 

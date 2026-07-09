@@ -1,10 +1,11 @@
 // /// <reference types="vite/client" />
 
-import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { useAuth } from "../AuthProvider";
 
 export default function App() {
   const { user, login, logout, isLoading } = useAuth();
+  const navigate = useNavigate();
 
   if (isLoading) {
     return <div>Loading...</div>;
@@ -18,7 +19,7 @@ export default function App() {
             Welcome, Guest!
           </h1>
           <button
-            onClick={logout}
+            onClick={() => navigate("/auth")}
             className="bg-red-600 hover:bg-red-700 text-white font-medium px-4 py-2 rounded-lg transition"
           >
             Login

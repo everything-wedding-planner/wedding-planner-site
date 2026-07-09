@@ -32,9 +32,9 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
     setUser(userId);
   };
 
-  const logout = () => {
+  const logout = async () => {
+    await fetch("/api/auth/logout", { method: "POST", credentials: "include" });
     setUser(null);
-    // Call your Hono logout endpoint here
   };
 
   return (
