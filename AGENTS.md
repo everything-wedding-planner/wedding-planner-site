@@ -13,6 +13,7 @@ Monorepo with two packages: **root** = Cloudflare Worker (Hono.js backend), **`f
 
 - All work must be linked to a Linear ticket. No unbilled changes. If asked to create a feature, you must check to see if a Linear ticket exists, and if not then follow the linear skill command to create one.
 - Before exploring the code base, first check if a Linear ticket for said ask exists.
+- **Before switching branches**: Run `git status` to check for uncommitted changes. If changes exist, alert the user and wait for instructions (commit, stash, or discard) before switching.
 
 ## Commands
 
