@@ -11,6 +11,12 @@ Backend serves `/api/*` routes, falls through to `ASSETS` binding for the SPA bu
 
 Frontend (`frontend/src/`) and backend (`src/`) both exist.
 
+### Cached IDs (project-specific)
+
+| Project              | Team ID                                | Project ID                             |
+| -------------------- | -------------------------------------- | -------------------------------------- |
+| Wedding Planner Site | `8b59041f-2cbe-4b59-b281-f9e66d7531ec` | `eaa524d3-5939-4f97-a830-b1340b024c39` |
+
 ## Known quirks
 
 - Frontend tsconfig has `noUnusedLocals` / `noUnusedParameters: true` — unused imports/params fail `tsc --noEmit`.
