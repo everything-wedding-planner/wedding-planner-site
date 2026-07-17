@@ -2,30 +2,18 @@
 
 import { useState } from "react";
 import { useAuth } from "../AuthProvider";
+import { Navigate } from "react-router-dom";
 
 export default function App() {
   const { user, login, logout, isLoading } = useAuth();
+  console.log("App user:", user);
 
   if (isLoading) {
     return <div>Loading...</div>;
   }
 
   if (!user) {
-    return (
-      <div className="flex min-h-screen items-center justify-center bg-slate-100">
-        <div className="rounded-2xl bg-white p-8 shadow-xl text-center max-w-sm">
-          <h1 className="text-2xl font-bold text-slate-800 mb-2">
-            Welcome, Guest!
-          </h1>
-          <button
-            onClick={logout}
-            className="bg-red-600 hover:bg-red-700 text-white font-medium px-4 py-2 rounded-lg transition"
-          >
-            Login
-          </button>
-        </div>
-      </div>
-    );
+    return <Navigate to="/auth" />;
   }
 
   return (

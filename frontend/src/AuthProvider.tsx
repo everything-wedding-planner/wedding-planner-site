@@ -3,7 +3,7 @@ import React, { createContext, useContext, useState, useEffect } from "react";
 interface AuthContextType {
   user: string | null;
   login: (id: string) => Promise<void>;
-  logout: () => void;
+  logout: () => Promise<void>;
   isLoading: boolean;
 }
 
@@ -28,13 +28,18 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
   }, []);
 
   const login = async (userId: string) => {
-    // Assuming backend returns success and sets cookie
     setUser(userId);
   };
 
-  const logout = () => {
-    setUser(null);
-    // Call your Hono logout endpoint here
+  const logout = async () => {
+    try {
+      await fetch("/api/auth/logout", {
+        method: "POST",
+        credentials: "include",
+      });
+    } finally {
+      setUser(null);
+    }
   };
 
   return (

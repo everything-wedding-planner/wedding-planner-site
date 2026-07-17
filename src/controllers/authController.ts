@@ -7,7 +7,8 @@ import type { AppBindings } from "../env";
 export const authRoute = new Hono<AppBindings>();
 
 authRoute.post("/signup", async (c) => {
-  const { name, email, password, session } = await c.req.json();
+  const { name, email, password } = await c.req.json();
+  const session = c.get("session");
 
   const hashedPassword = await bcrypt.hash(password, 10);
 
@@ -23,14 +24,15 @@ authRoute.post("/signup", async (c) => {
     }
 
     session.set("userId", user.id);
-    return c.json({ success });
+    return c.json({ success, userId: user.id });
   } catch (error) {
     return c.json({ error: (error as Error).message }, 400);
   }
 });
 
 authRoute.post("/login", async (c) => {
-  const { email, password, session } = await c.req.json();
+  const { email, password } = await c.req.json();
+  const session = c.get("session");
 
   try {
     const user = await findUserByEmail(c.env.DB, email);
@@ -50,4 +52,10 @@ authRoute.post("/login", async (c) => {
   } catch (error) {
     return c.json({ error: (error as Error).message }, 500);
   }
+});
+
+authRoute.post("/logout", async (c) => {
+  const session = c.get("session");
+  session.deleteSession();
+  return c.json({ success: true });
 });
