@@ -1,6 +1,9 @@
 import { Hono } from "hono";
 import { cors } from "hono/cors";
 import { authRoute } from "./controllers/authController";
+import { vendorRoute } from "./controllers/vendorController";
+import { companyRoute } from "./controllers/companyController";
+import { venueRoute } from "./controllers/venueController";
 import { CookieStore, sessionMiddleware } from "hono-sessions";
 import type { AppBindings } from "./env";
 
@@ -23,6 +26,9 @@ app.use("/api/*", async (c, next) => {
 });
 
 app.route("/api/auth", authRoute);
+app.route("/api/vendors", vendorRoute);
+app.route("/api/companies", companyRoute);
+app.route("/api/venues", venueRoute);
 
 app.get("/api/me", async (c) => {
   const session = c.get("session");
