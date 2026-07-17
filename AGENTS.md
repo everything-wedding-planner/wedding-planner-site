@@ -1,5 +1,16 @@
 # AGENTS.md — wedding-planner-admin-site
 
+## Project Overview
+
+This is an **admin dashboard for wedding vendors and venues**. Users (vendors/venues) can:
+
+- List and manage their services
+- View analytics on performance (views, engagement, interest)
+- See who is interested in their services
+- Track bookings and inquiries
+
+The dashboard is the primary interface — all features live within it.
+
 ## Project structure
 
 Monorepo with two packages: **root** = Cloudflare Worker (Hono.js backend), **`frontend/`** = React SPA (Vite + Tailwind v4).
