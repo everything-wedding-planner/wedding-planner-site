@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { useAuth } from "../AuthProvider";
 
 export default function AuthPage() {
   const [isLogin, setIsLogin] = useState(true);
@@ -8,6 +9,9 @@ export default function AuthPage() {
     password: "",
     confirmPassword: "",
   });
+  const [error, setError] = useState<string | null>(null);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const { login } = useAuth();
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -15,20 +19,45 @@ export default function AuthPage() {
 
   const handleSubmit = async (e: React.SubmitEvent<HTMLFormElement>) => {
     e.preventDefault();
-    if (isLogin) {
-      const response = await fetch(`/api/auth/login`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(formData),
-      });
-    } else {
-      const response = await fetch(`/api/auth/signup`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(formData),
-      });
+    setError(null);
 
-      console.log(response);
+    if (!isLogin && formData.password !== formData.confirmPassword) {
+      setError("Passwords do not match");
+      return;
+    }
+
+    setIsSubmitting(true);
+
+    try {
+      if (isLogin) {
+        const res = await fetch("/api/auth/login", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ email: formData.email, password: formData.password }),
+        });
+        const data = await res.json();
+        if (!res.ok) {
+          setError(data.error || "Login failed");
+          return;
+        }
+        await login(data.userId);
+      } else {
+        const res = await fetch("/api/auth/signup", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ name: formData.name, email: formData.email, password: formData.password }),
+        });
+        const data = await res.json();
+        if (!res.ok) {
+          setError(data.error || "Signup failed");
+          return;
+        }
+        await login(data.userId);
+      }
+    } catch {
+      setError("An unexpected error occurred");
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
@@ -43,13 +72,27 @@ export default function AuthPage() {
           <p className="mt-2 text-sm text-gray-600">
             {isLogin ? "Don't have an account? " : "Already have an account? "}
             <button
-              onClick={() => setIsLogin(!isLogin)}
+              onClick={() => {
+                setIsLogin(!isLogin);
+                setError(null);
+              }}
               className="font-medium text-indigo-600 hover:text-indigo-700 focus:outline-none focus:underline transition-colors"
             >
               {isLogin ? "Sign up" : "Sign in"}
             </button>
           </p>
         </div>
+
+        {/* Error Banner */}
+        {error && (
+          <div className="rounded-md bg-red-50 p-4" role="alert">
+            <div className="flex">
+              <div className="ml-3">
+                <h3 className="text-sm font-medium text-red-800">{error}</h3>
+              </div>
+            </div>
+          </div>
+        )}
 
         {/* Form */}
         <form className="space-y-6" onSubmit={handleSubmit}>
@@ -118,6 +161,9 @@ export default function AuthPage() {
                 className="w-full px-3 py-2 border border-gray-200 text-sm text-gray-900 placeholder-gray-400 rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
                 placeholder="••••••••"
               />
+              {formData.confirmPassword && formData.password !== formData.confirmPassword && (
+                <p className="mt-1 text-sm text-red-600">Passwords do not match</p>
+              )}
             </div>
           )}
 
@@ -153,9 +199,16 @@ export default function AuthPage() {
           {/* Submit Button */}
           <button
             type="submit"
-            className="w-full py-2 px-4 text-sm font-medium text-white bg-indigo-600 rounded-md hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition-colors"
+            disabled={isSubmitting}
+            className="w-full py-2 px-4 text-sm font-medium text-white bg-indigo-600 rounded-md hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
           >
-            {isLogin ? "Sign in" : "Register"}
+            {isSubmitting
+              ? isLogin
+                ? "Signing in..."
+                : "Registering..."
+              : isLogin
+                ? "Sign in"
+                : "Register"}
           </button>
         </form>
 
