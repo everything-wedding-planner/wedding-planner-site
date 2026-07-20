@@ -1,19 +1,20 @@
 import { Hono } from "hono";
 import { cors } from "hono/cors";
 import { authRoute } from "./controllers/authController";
-import { getCookie, setCookie, deleteCookie } from "hono/cookie";
+import { vendorRoute } from "./controllers/vendorController";
+import { companyRoute } from "./controllers/companyController";
+import { venueRoute } from "./controllers/venueController";
+import { onboardingRoute } from "./controllers/onboardingController";
 import { CookieStore, sessionMiddleware } from "hono-sessions";
 import type { AppBindings } from "./env";
-
-const SESSION_SECRET = "your-super-secret-key-at-least-32-chars";
 
 const app = new Hono<AppBindings>();
 
 app.use("/api/*", cors());
-app.use(
-  sessionMiddleware({
+app.use("/api/*", async (c, next) => {
+  const middleware = sessionMiddleware({
     store: new CookieStore(),
-    encryptionKey: SESSION_SECRET,
+    encryptionKey: c.env.SESSION_SECRET,
     expireAfterSeconds: 60 * 60 * 24, // 1 day
     cookieOptions: {
       path: "/",
@@ -21,10 +22,15 @@ app.use(
       secure: true,
       sameSite: "Lax",
     },
-  }),
-);
+  });
+  return middleware(c, next);
+});
 
 app.route("/api/auth", authRoute);
+app.route("/api/vendors", vendorRoute);
+app.route("/api/companies", companyRoute);
+app.route("/api/venues", venueRoute);
+app.route("/api/onboarding", onboardingRoute);
 
 app.get("/api/me", async (c) => {
   const session = c.get("session");
