@@ -1,10 +1,12 @@
 import { Hono } from "hono";
 import { cors } from "hono/cors";
+import { UserModel } from "./models/Users/userModel";
 import { authRoute } from "./controllers/authController";
 import { vendorRoute } from "./controllers/vendorController";
 import { companyRoute } from "./controllers/companyController";
 import { venueRoute } from "./controllers/venueController";
 import { onboardingRoute } from "./controllers/onboardingController";
+import { dashboardRoute } from "./controllers/dashboardController";
 import { CookieStore, sessionMiddleware } from "hono-sessions";
 import type { AppBindings } from "./env";
 
@@ -31,9 +33,11 @@ app.route("/api/vendors", vendorRoute);
 app.route("/api/companies", companyRoute);
 app.route("/api/venues", venueRoute);
 app.route("/api/onboarding", onboardingRoute);
+app.route("/api/dashboard", dashboardRoute);
 
 app.get("/api/me", async (c) => {
   const session = c.get("session");
+  const db = c.env.DB;
 
   const userId = session.get("userId");
 
@@ -41,7 +45,10 @@ app.get("/api/me", async (c) => {
     return c.json({ error: "Unauthorized" }, 401);
   }
 
-  return c.json({ userId });
+  const userModel = new UserModel(db);
+  let user = await userModel.findUserById(userId);
+
+  return c.json({ id: userId, user: user });
 });
 
 app.get("*", async (c) => await c.env.ASSETS.fetch(c.req.raw));

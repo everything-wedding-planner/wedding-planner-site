@@ -1,7 +1,9 @@
 import React, { createContext, useContext, useState, useEffect } from "react";
+import type { UserRow } from "../../src/models/Users/userModel";
 
 interface AuthContextType {
-  user: string | null;
+  userId: string | null;
+  user: UserRow | null;
   login: (id: string) => Promise<void>;
   logout: () => Promise<void>;
   isLoading: boolean;
@@ -12,7 +14,8 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined);
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
   children,
 }) => {
-  const [user, setUser] = useState<string | null>(null);
+  const [userId, setUserId] = useState<string | null>(null);
+  const [user, setUser] = useState<UserRow | null>(null);
   const [isLoading, setIsLoading] = useState(true);
 
   // Check if user is already logged in on mount
@@ -22,13 +25,19 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
         if (res.ok) return res.json();
         throw new Error();
       })
-      .then((data) => setUser(data.userId))
-      .catch(() => setUser(null))
+      .then((data) => {
+        setUserId(data.id);
+        setUser(data.user);
+      })
+      .catch(() => {
+        setUserId(null);
+        setUser(null);
+      })
       .finally(() => setIsLoading(false));
   }, []);
 
   const login = async (userId: string) => {
-    setUser(userId);
+    setUserId(userId);
   };
 
   const logout = async () => {
@@ -38,12 +47,12 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
         credentials: "include",
       });
     } finally {
-      setUser(null);
+      setUserId(null);
     }
   };
 
   return (
-    <AuthContext.Provider value={{ user, login, logout, isLoading }}>
+    <AuthContext.Provider value={{ userId, user, login, logout, isLoading }}>
       {children}
     </AuthContext.Provider>
   );

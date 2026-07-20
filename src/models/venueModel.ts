@@ -75,4 +75,12 @@ export class VenueModel {
       return new Error("Failed to create venue");
     }
   }
+
+  async getVenuesByCompanyId(companyId: number): Promise<VenueRow[]> {
+    const results = await this.db
+      .prepare("SELECT * FROM venue WHERE company_id = ?")
+      .bind(companyId)
+      .all<VenueRow>();
+    return results.results || [];
+  }
 }

@@ -8,6 +8,7 @@ export interface UserRow {
   email: string;
   password_hash: string;
   is_active: boolean;
+  completed_onboarding: boolean;
   created_at: string;
   updated_at: string;
 }
@@ -17,6 +18,14 @@ export class UserModel {
 
   constructor(db: D1Database) {
     this.db = db;
+  }
+
+  async findUserById(id: number): Promise<UserRow | null> {
+    const result = await this.db
+      .prepare("SELECT * FROM users WHERE id = ?")
+      .bind(id)
+      .first<UserRow>();
+    return result || null;
   }
 
   async findUserByEmail(email: string): Promise<UserRow | null> {
