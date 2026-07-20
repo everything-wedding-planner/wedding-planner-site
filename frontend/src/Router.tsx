@@ -3,6 +3,7 @@ import AuthGuard from "./views/AuthGuard";
 import AuthPage from "./views/AuthPage";
 import DashboardLayout from "./components/DashboardLayout";
 import DashboardHome from "./views/DashboardHome";
+import OnboardingPage from "./views/OnboardingPage";
 
 const FrontendRouter = createBrowserRouter([
   {
@@ -26,6 +27,10 @@ const FrontendRouter = createBrowserRouter([
             element: <DashboardHome />,
           },
         ],
+      },
+      {
+        path: "/onboarding",
+        element: <OnboardingPage />,
       },
     ],
   },

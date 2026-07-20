@@ -49,6 +49,13 @@ export class UserModel {
     return result.success;
   }
 
+  async completedOnBoarding(userId: number): Promise<void> {
+    await this.db
+      .prepare("UPDATE users SET completed_onboarding = 1 WHERE id = ?")
+      .bind(userId)
+      .run();
+  }
+
   async getUserTypes(userId: number): Promise<UserTypeRow[]> {
     const result = await this.db
       .prepare(

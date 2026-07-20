@@ -14,7 +14,7 @@
   //   "nodejs_compat"
   // ],
   "vars": {
-    "SESSION_SECRET": "dev-secret-key-at-least-32-chars-long"
+    "SESSION_SECRET": "dev-secret-key-at-least-32-chars-long",
   },
   // "kv_namespaces": [
   //   {
@@ -32,7 +32,7 @@
     {
       "binding": "DB",
       "database_name": "wedding-planner",
-      "database_id": "313d4950-ac59-4f42-9a32-9376c9423db6",
+      "database_id": "92176296-d1ef-40f5-80bd-fe7c8bca2278",
       "migrations_table": "migrations",
       "migrations_dir": "./database/migrations",
     },

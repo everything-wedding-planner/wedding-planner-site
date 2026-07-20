@@ -4,6 +4,7 @@ import { authRoute } from "./controllers/authController";
 import { vendorRoute } from "./controllers/vendorController";
 import { companyRoute } from "./controllers/companyController";
 import { venueRoute } from "./controllers/venueController";
+import { onboardingRoute } from "./controllers/onboardingController";
 import { CookieStore, sessionMiddleware } from "hono-sessions";
 import type { AppBindings } from "./env";
 
@@ -29,6 +30,7 @@ app.route("/api/auth", authRoute);
 app.route("/api/vendors", vendorRoute);
 app.route("/api/companies", companyRoute);
 app.route("/api/venues", venueRoute);
+app.route("/api/onboarding", onboardingRoute);
 
 app.get("/api/me", async (c) => {
   const session = c.get("session");

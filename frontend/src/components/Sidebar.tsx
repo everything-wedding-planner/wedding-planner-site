@@ -4,6 +4,7 @@ import {
   Users,
   DollarSign,
   Clock,
+  Sparkles,
 } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
 
@@ -18,6 +19,7 @@ const navItems: NavItem[] = [
   { to: "/guests", label: "Guest List", icon: Users },
   { to: "/budget", label: "Budget", icon: DollarSign },
   { to: "/timeline", label: "Timeline", icon: Clock },
+  { to: "/onboarding", label: "Onboarding", icon: Sparkles },
 ];
 
 export default function Sidebar() {

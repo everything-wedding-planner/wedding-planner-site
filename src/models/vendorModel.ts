@@ -2,12 +2,22 @@ import { D1Database } from "@cloudflare/workers-types";
 
 export interface VendorRow {
   id: number;
+  company_id: number;
   name: string;
-  email: string;
-  phone: string;
-  address: string;
+  service_type: string;
+  contact_name: string;
+  contact_email: string;
+  contact_phone: string;
   created_at: string;
   updated_at: string;
+}
+
+export interface VendorProfile {
+  businessName: string;
+  serviceType: string;
+  contactName: string;
+  contactEmail: string;
+  contactPhone: string;
 }
 
 export class VendorModel {
@@ -19,14 +29,14 @@ export class VendorModel {
 
   async getAllVendors(): Promise<VendorRow[]> {
     const result = await this.db
-      .prepare("SELECT * FROM vendors")
+      .prepare("SELECT * FROM vendor")
       .all<VendorRow>();
     return result.results || [];
   }
 
   async getVendorById(id: number): Promise<VendorRow | null> {
     const result = await this.db
-      .prepare("SELECT * FROM vendors WHERE id = ?")
+      .prepare("SELECT * FROM vendor WHERE id = ?")
       .bind(id)
       .first<VendorRow>();
 
@@ -34,16 +44,25 @@ export class VendorModel {
   }
 
   async createVendor(
+    companyId: number,
     name: string,
-    email: string,
-    phone: string,
-    address: string,
+    service_type: string,
+    contact_phone: string,
+    contact_email: string,
+    contact_name: string,
   ): Promise<VendorRow | null> {
     const result = await this.db
       .prepare(
-        "INSERT INTO vendors (name, email, phone, address, created_at, updated_at) VALUES (?, ?, ?, ?, datetime('now'), datetime('now'))",
+        "INSERT INTO vendor (company_id, name, service_type, contact_phone, contact_email, contact_name, created_at, updated_at) VALUES (?, ?, ?, ?, ?, ?, datetime('now'), datetime('now'))",
       )
-      .bind(name, email, phone, address)
+      .bind(
+        companyId,
+        name,
+        service_type,
+        contact_phone,
+        contact_email,
+        contact_name,
+      )
       .run();
 
     if (!result.success) {
