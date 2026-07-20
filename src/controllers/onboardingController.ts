@@ -46,7 +46,6 @@ onboardingRoute.post("/submit", async (c) => {
   }
 
   if (vendor) {
-    console.log("Vendor data received:", vendor);
     const {
       businessName,
       serviceType,
@@ -66,7 +65,6 @@ onboardingRoute.post("/submit", async (c) => {
   }
 
   if (venue) {
-    console.log("Venue data received:", venue);
     const {
       venueName,
       address,
