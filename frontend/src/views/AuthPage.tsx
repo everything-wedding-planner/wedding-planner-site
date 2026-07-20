@@ -78,37 +78,23 @@ export default function AuthPage() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-50 px-4 py-12 sm:px-6 lg:px-8">
+    <div className="min-h-screen flex items-center justify-center bg-stone-50 px-4 py-12 sm:px-6 lg:px-8">
       <div className="w-full max-w-md space-y-8 bg-white p-6 sm:p-8 rounded-xl shadow-md">
         {/* Header */}
         <div className="text-center">
-          <h2 className="text-3xl font-extrabold text-gray-900">
+          <h2 className="text-2xl font-bold text-gray-900">
             {isLogin ? "Sign in to your account" : "Create your account"}
           </h2>
           <p className="mt-2 text-sm text-gray-600">
             {isLogin ? "Don't have an account? " : "Already have an account? "}
             <button
-              onClick={() => {
-                setIsLogin(!isLogin);
-                setError(null);
-              }}
-              className="font-medium text-indigo-600 hover:text-indigo-700 focus:outline-none focus:underline transition-colors"
+              onClick={() => setIsLogin(!isLogin)}
+              className="font-medium text-rose-600 hover:text-rose-700 focus:outline-none focus:underline transition-colors"
             >
               {isLogin ? "Sign up" : "Sign in"}
             </button>
           </p>
         </div>
-
-        {/* Error Banner */}
-        {error && (
-          <div className="rounded-md bg-red-50 p-4" role="alert">
-            <div className="flex">
-              <div className="ml-3">
-                <h3 className="text-sm font-medium text-red-800">{error}</h3>
-              </div>
-            </div>
-          </div>
-        )}
 
         {/* Form */}
         <form className="space-y-6" onSubmit={handleSubmit}>
@@ -124,7 +110,7 @@ export default function AuthPage() {
                 required
                 value={formData.name}
                 onChange={handleChange}
-                className="w-full px-3 py-2 border border-gray-200 text-sm text-gray-900 placeholder-gray-400 rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+                className="w-full px-3 py-2 border border-gray-200 text-sm text-gray-900 placeholder-gray-400 rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-rose-500"
                 placeholder="John Doe"
               />
             </div>
@@ -141,7 +127,7 @@ export default function AuthPage() {
               required
               value={formData.email}
               onChange={handleChange}
-              className="w-full px-3 py-2 border border-gray-200 text-sm text-gray-900 placeholder-gray-400 rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+              className="w-full px-3 py-2 border border-gray-200 text-sm text-gray-900 placeholder-gray-400 rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-rose-500"
               placeholder="you@example.com"
             />
           </div>
@@ -157,7 +143,7 @@ export default function AuthPage() {
               required
               value={formData.password}
               onChange={handleChange}
-              className="w-full px-3 py-2 border border-gray-200 text-sm text-gray-900 placeholder-gray-400 rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+              className="w-full px-3 py-2 border border-gray-200 text-sm text-gray-900 placeholder-gray-400 rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-rose-500"
               placeholder="••••••••"
             />
           </div>
@@ -174,7 +160,7 @@ export default function AuthPage() {
                 required
                 value={formData.confirmPassword}
                 onChange={handleChange}
-                className="w-full px-3 py-2 border border-gray-200 text-sm text-gray-900 placeholder-gray-400 rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+                className="w-full px-3 py-2 border border-gray-200 text-sm text-gray-900 placeholder-gray-400 rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-rose-500"
                 placeholder="••••••••"
               />
               {formData.confirmPassword &&
@@ -194,7 +180,7 @@ export default function AuthPage() {
                   id="remember-me"
                   name="remember-me"
                   type="checkbox"
-                  className="h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-200 rounded"
+                  className="h-4 w-4 text-rose-600 focus:ring-rose-500 border-gray-200 rounded"
                 />
                 <label
                   htmlFor="remember-me"
@@ -207,7 +193,7 @@ export default function AuthPage() {
               <div className="text-sm">
                 <a
                   href="#"
-                  className="font-medium text-indigo-600 hover:text-indigo-700"
+                  className="font-medium text-rose-600 hover:text-rose-700"
                 >
                   Forgot your password?
                 </a>
@@ -218,23 +204,16 @@ export default function AuthPage() {
           {/* Submit Button */}
           <button
             type="submit"
-            disabled={isSubmitting}
-            className="w-full py-2 px-4 text-sm font-medium text-white bg-indigo-600 rounded-md hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+            className="w-full py-2.5 px-4 text-sm font-medium text-white bg-rose-600 rounded-md hover:bg-rose-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-rose-500 transition-colors"
           >
-            {isSubmitting
-              ? isLogin
-                ? "Signing in..."
-                : "Registering..."
-              : isLogin
-                ? "Sign in"
-                : "Register"}
+            {isLogin ? "Sign in" : "Register"}
           </button>
         </form>
 
         {/* Contact Support */}
         <a
           href="mailto:support@example.com"
-          className="block w-full text-center py-2 px-4 text-sm font-medium text-indigo-600 border border-indigo-200 rounded-md hover:bg-indigo-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition-colors"
+          className="block w-full text-center py-2.5 px-4 text-sm font-medium text-rose-600 border border-rose-200 rounded-md hover:bg-rose-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-rose-500 transition-colors"
         >
           Contact Support
         </a>
