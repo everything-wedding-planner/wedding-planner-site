@@ -1,1 +1,42 @@
 @import "tailwindcss";
+
+@theme {
+  /* Brand Colors */
+  --color-primary: #e11d48;        /* rose-600 */
+  --color-primary-hover: #be123c;  /* rose-700 */
+  --color-primary-focus: #f43f5e;  /* rose-500 */
+  --color-primary-border: #fecdd3; /* rose-200 */
+  --color-primary-text: #e11d48;   /* rose-600 */
+  --color-primary-light: #fff1f2;  /* rose-50 */
+  
+  /* Neutral Palette */
+  --color-background: #fafaf9;     /* stone-50 */
+  --color-surface: #ffffff;
+  --color-border: #e7e5e4;         /* stone-200 */
+  --color-text: #1c1917;           /* stone-900 */
+  --color-text-secondary: #57534e; /* stone-600 */
+  --color-text-muted: #78716c;     /* stone-500 */
+  
+  /* Extended Neutrals */
+  --color-text-dark: #0c0a09;      /* stone-950 */
+  --color-text-light: #a8a29e;     /* stone-400 */
+  --color-bg-subtle: #f5f5f4;      /* stone-100 */
+  --color-bg-muted: #e7e5e4;       /* stone-200 */
+  
+  /* Gray Palette (for forms) */
+  --color-gray-50: #f9fafb;
+  --color-gray-100: #f3f4f6;
+  --color-gray-200: #e5e7eb;
+  --color-gray-300: #d1d5db;
+  --color-gray-400: #9ca3af;
+  --color-gray-500: #6b7280;
+  --color-gray-600: #4b5563;
+  --color-gray-700: #374151;
+  --color-gray-800: #1f2937;
+  --color-gray-900: #111827;
+  
+  /* Error Colors */
+  --color-error: #dc2626;          /* red-600 */
+  --color-error-light: #fef2f2;    /* red-50 */
+  --color-error-text: #991b1b;     /* red-800 */
+}
