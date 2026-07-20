@@ -1,38 +1,36 @@
-# STU-8: Modernize AuthPage styling
+# STU-11: Dashboard data & features — Proposal
 
 ## Problem
-The AuthPage uses a different color palette than the rest of the application:
-- **Auth page:** indigo accent (`indigo-600`) on cool gray-50 background (`bg-gray-50`)
-- **Dashboard + Onboarding:** rose accent (`rose-600`/`rose-700`) on warm stone-50 background (`bg-stone-50`)
 
-This creates a jarring visual disconnect when users transition between login and the main app.
+The dashboard currently shows only a greeting. Vendors/venues have no visibility into how their listings are performing — no views, inquiries, bookings, or engagement metrics are displayed.
 
 ## Proposed Solution
-1. **Create a centralized styleguide** using Tailwind v4's CSS-first configuration (`@theme` directive) to define brand colors and design tokens
-2. **Update AuthPage** to use the new styleguide tokens instead of hardcoded Tailwind classes
-3. **Ensure all future components** use the same tokens for consistency
+
+Build out the dashboard homepage with five data sections using mock/placeholder data, reusable UI components, and a clean card-based layout. No charts — focus on numeric KPI cards, lists, and quick-action shortcuts.
 
 ## Key Changes
 
-### Styleguide (New)
-- Define brand color palette in `frontend/src/index.css` using `@theme`
-- Create semantic tokens: `primary`, `primary-hover`, `primary-focus`, `primary-border`, `primary-text`
-- Define neutral palette: `background`, `surface`, `border`, `text`, `text-muted`
-- Export reusable utility classes for buttons, inputs, and cards
+### New Reusable Components (`frontend/src/components/`)
+- `StatsCard.tsx` — KPI card showing a label, numeric value, and optional trend indicator
+- `Card.tsx` — Generic card container (replaces repeated `bg-white rounded-xl shadow-md p-6`)
+- `Badge.tsx` — Status badge (new, pending, confirmed, completed, etc.)
+- `DataTable.tsx` — Simple list/table for inquiries and bookings
 
-### AuthPage Updates
-- Replace all `indigo-*` references with `rose-*` equivalents
-- Change background from `bg-gray-50` to `bg-stone-50`
-- Update heading from `text-3xl font-extrabold` to `text-2xl font-bold`
-- Update button height from `py-2` to `py-2.5`
+### Dashboard Sections (`frontend/src/views/DashboardHome.tsx`)
+1. **Welcome header** — Greeting with company name
+2. **Stats row** — 3–4 StatsCards: total views, total inquiries, total bookings, conversion rate
+3. **Recent Inquiries** — Table of latest inquiries with status badges
+4. **Upcoming Bookings** — Table of upcoming bookings with date, client, status
+5. **Quick Actions** — Card grid with shortcuts (Edit listings, Respond to inquiries, View analytics, Manage calendar)
+
+### Mock Data
+- Centralized `frontend/src/data/dashboardMockData.ts` with sample stats, inquiries, and bookings
+- Easy to swap out when backend endpoints are added later
 
 ## Success Criteria
-- Centralized styleguide exists in `frontend/src/index.css`
-- AuthPage uses styleguide tokens (not hardcoded colors)
-- All indigo references replaced with rose equivalents
-- Background changed from gray-50 to stone-50
-- No functional changes to form behavior
-- No new dependencies or components
 
-## Linear Ticket
-[STU-8](https://linear.app/stuartcalverley/issue/STU-8)
+- Dashboard displays meaningful data across all 5 sections
+- Reusable components are extracted and used consistently
+- All data comes from mock data file (no hardcoded strings in components)
+- TypeScript strict mode passes (no unused imports/variables)
+- Visual design matches existing rose/stone design system
