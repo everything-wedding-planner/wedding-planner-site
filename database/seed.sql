@@ -16,8 +16,8 @@ VALUES
     (2, 'vendor_owner2', 'vendor2@example.com', '$2a$10$N9qo8uLOickgx2ZMRZoMyeIjZAgcfl7p92ldGxad68LJZdL17lhWy', 1, 1),
     (3, 'venue_owner1', 'venue1@example.com', '$2a$10$N9qo8uLOickgx2ZMRZoMyeIjZAgcfl7p92ldGxad68LJZdL17lhWy', 1, 1),
     (4, 'venue_owner2', 'venue2@example.com', '$2a$10$N9qo8uLOickgx2ZMRZoMyeIjZAgcfl7p92ldGxad68LJZdL17lhWy', 1, 1),
-    (5, 'client1', 'client1@example.com', '$2a$10$N9qo8uLOickgx2ZMRZoMyeIjZAgcfl7p92ldGxad68LJZdL17lhWy', 1, 1),
-    (6, 'client2', 'client2@example.com', '$2a$10$N9qo8uLOickgx2ZMRZoMyeIjZAgcfl7p92ldGxad68LJZdL17lhWy', 1, 1);
+    (5, 'user1', 'user1@example.com', '$2a$10$N9qo8uLOickgx2ZMRZoMyeIjZAgcfl7p92ldGxad68LJZdL17lhWy', 1, 1),
+    (6, 'user2', 'user2@example.com', '$2a$10$N9qo8uLOickgx2ZMRZoMyeIjZAgcfl7p92ldGxad68LJZdL17lhWy', 1, 1);
 
 -- ============================================================
 -- COMPANIES
@@ -54,14 +54,6 @@ VALUES
 -- Note: The bookings table FK references clients(id) which doesn't exist
 -- as a standalone table. We create a minimal clients table to satisfy the
 -- FK constraint. Data is populated from users where role = 'client'.
-
-CREATE TABLE IF NOT EXISTS clients (
-    id INTEGER PRIMARY KEY,
-    name TEXT
-);
-
-INSERT OR IGNORE INTO clients (id, name)
-SELECT id, username FROM users WHERE id IN (5, 6);
 
 -- service_id references vendor.id or venue.id depending on service_type
 
