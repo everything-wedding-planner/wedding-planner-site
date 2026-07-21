@@ -29,5 +29,8 @@ yarn-error.log*
 pnpm-debug.log*
 lerna-debug.log*
 
+# seed data (override global *.sql ignore)
+!database/seed.sql
+
 # misc
 .DS_Store

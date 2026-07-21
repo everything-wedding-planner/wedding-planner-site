@@ -7,7 +7,8 @@
     "views:dev": "npm --prefix frontend run dev",
     "views:build": "npm --prefix frontend run build",
     "cf-typegen": "wrangler types --env-interface CloudflareBindings",
-    "test": "vitest --run"
+    "test": "vitest --run",
+    "db:seed": "wrangler d1 execute wedding-planner --local --file=./database/seed.sql"
   },
   "dependencies": {
     "@cloudflare/vitest-pool-workers": "^0.8.0",
