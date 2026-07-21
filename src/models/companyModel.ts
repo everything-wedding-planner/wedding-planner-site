@@ -18,6 +18,11 @@ export interface CompanyProfile {
   email: string;
 }
 
+export const CompanyServiceTypes = {
+  vendor: "VENDOR",
+  venue: "VENUE",
+} as const;
+
 export class CompanyModel {
   private db: D1Database;
 
@@ -36,6 +41,14 @@ export class CompanyModel {
     const result = await this.db
       .prepare("SELECT * FROM company WHERE id = ?")
       .bind(id)
+      .first<CompanyRow>();
+    return result || null;
+  }
+
+  async getCompanyByUserId(userId: number): Promise<CompanyRow | null> {
+    const result = await this.db
+      .prepare("SELECT * FROM company WHERE user_id = ?")
+      .bind(userId)
       .first<CompanyRow>();
     return result || null;
   }
