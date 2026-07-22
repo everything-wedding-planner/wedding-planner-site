@@ -17,7 +17,7 @@ export default defineConfig(async () => {
         },
         miniflare: {
           bindings: {
-            SESSION_SECRET: "test-secret-key-at-least-32-chars-long",
+            SESSION_SECRET: "dev-secret-key-at-least-32-chars-long",
             TEST_MIGRATIONS: migrations,
           },
         },
@@ -30,7 +30,7 @@ export default defineConfig(async () => {
         wrangler: { configPath: "./wrangler.jsonc" },
         miniflare: {
           bindings: {
-            SESSION_SECRET: "test-secret-key-at-least-32-chars-long",
+            SESSION_SECRET: "dev-secret-key-at-least-32-chars-long",
             TEST_MIGRATIONS: migrations,
           },
         },

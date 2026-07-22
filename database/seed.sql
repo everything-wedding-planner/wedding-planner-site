@@ -8,16 +8,16 @@ PRAGMA foreign_keys = OFF;
 -- USERS
 -- ============================================================
 -- All users share password: password123
--- Bcrypt hash: $2a$10$N9qo8uLOickgx2ZMRZoMyeIjZAgcfl7p92ldGxad68LJZdL17lhWy
+-- Bcrypt hash: $2b$10$4K2sDZhm253IQOgLuU46cu/gssU5SsE7qGIp5AKvOKPhJcwRhYJOy
 
 INSERT OR IGNORE INTO users (id, username, email, password_hash, is_active, completed_onboarding)
 VALUES
-    (1, 'vendor_owner1', 'vendor1@example.com', '$2a$10$N9qo8uLOickgx2ZMRZoMyeIjZAgcfl7p92ldGxad68LJZdL17lhWy', 1, 1),
-    (2, 'vendor_owner2', 'vendor2@example.com', '$2a$10$N9qo8uLOickgx2ZMRZoMyeIjZAgcfl7p92ldGxad68LJZdL17lhWy', 1, 1),
-    (3, 'venue_owner1', 'venue1@example.com', '$2a$10$N9qo8uLOickgx2ZMRZoMyeIjZAgcfl7p92ldGxad68LJZdL17lhWy', 1, 1),
-    (4, 'venue_owner2', 'venue2@example.com', '$2a$10$N9qo8uLOickgx2ZMRZoMyeIjZAgcfl7p92ldGxad68LJZdL17lhWy', 1, 1),
-    (5, 'user1', 'user1@example.com', '$2a$10$N9qo8uLOickgx2ZMRZoMyeIjZAgcfl7p92ldGxad68LJZdL17lhWy', 1, 1),
-    (6, 'user2', 'user2@example.com', '$2a$10$N9qo8uLOickgx2ZMRZoMyeIjZAgcfl7p92ldGxad68LJZdL17lhWy', 1, 1);
+    (1, 'vendor_owner1', 'vendor1@example.com', '$2b$10$jjl2zt6BaJrEZX/9mcUYR.Xh8KnEgykNIyIhCdFyFTcT80v8gjcyq', 1, 1),
+    (2, 'vendor_owner2', 'vendor2@example.com', '$2b$10$jjl2zt6BaJrEZX/9mcUYR.Xh8KnEgykNIyIhCdFyFTcT80v8gjcyq', 1, 1),
+    (3, 'venue_owner1', 'venue1@example.com', '$2b$10$jjl2zt6BaJrEZX/9mcUYR.Xh8KnEgykNIyIhCdFyFTcT80v8gjcyq', 1, 1),
+    (4, 'venue_owner2', 'venue2@example.com', '$2b$10$jjl2zt6BaJrEZX/9mcUYR.Xh8KnEgykNIyIhCdFyFTcT80v8gjcyq', 1, 1),
+    (5, 'user1', 'user1@example.com', '$2b$10$jjl2zt6BaJrEZX/9mcUYR.Xh8KnEgykNIyIhCdFyFTcT80v8gjcyq', 1, 1),
+    (6, 'user2', 'user2@example.com', '$2b$10$jjl2zt6BaJrEZX/9mcUYR.Xh8KnEgykNIyIhCdFyFTcT80v8gjcyq', 1, 1);
 
 -- ============================================================
 -- COMPANIES
@@ -59,11 +59,11 @@ VALUES
 
 INSERT OR IGNORE INTO bookings (id, client_id, company_id, service_type, service_id, event_date, status)
 VALUES
-    (1, 5, 1, 'photography', 1, '2026-09-15', 'CONFIRMED'),
-    (2, 5, 3, 'venue', 1, '2026-09-15', 'CONFIRMED'),
-    (3, 6, 2, 'florist', 2, '2026-10-20', 'PENDING'),
-    (4, 6, 4, 'venue', 2, '2026-10-20', 'PENDING'),
-    (5, 5, 1, 'photography', 1, '2025-12-01', 'COMPLETED');
+    (1, 5, 1, 'VENDOR', 1, '2026-09-15', 'ACCEPTED'),
+    (2, 5, 3, 'VENDOR', 1, '2026-09-15', 'ACCEPTED'),
+    (3, 6, 2, 'VENDOR', 2, '2026-10-20', 'PENDING'),
+    (4, 6, 4, 'VENUE', 2, '2026-10-20', 'PENDING'),
+    (5, 5, 1, 'VENDOR', 1, '2025-12-01', 'REJECTED');
 
 -- ============================================================
 -- INQUIRIES
@@ -72,11 +72,11 @@ VALUES
 
 INSERT OR IGNORE INTO inquiries (id, service_id, service_type, client_id, event_date, status)
 VALUES
-    (1, 1, 'photography', 5, '2026-09-15', 'CONVERTED'),
-    (2, 1, 'venue', 5, '2026-09-15', 'CONVERTED'),
-    (3, 2, 'florist', 6, '2026-10-20', 'RESPONDED'),
-    (4, 2, 'venue', 6, '2026-10-20', 'NEW'),
-    (5, 1, 'photography', 5, '2027-03-01', 'NEW'),
-    (6, 2, 'florist', 6, '2027-06-15', 'NEW');
+    (1, 1, 'VENDOR', 5, '2026-09-15', 'CANCELLED'),
+    (2, 1, 'VENUE', 5, '2026-09-15', 'REJECTED'),
+    (3, 2, 'VENDOR', 6, '2026-10-20', 'ACCEPTED'),
+    (4, 2, 'VENUE', 6, '2026-10-20', 'NEW'),
+    (5, 1, 'VENDOR', 5, '2027-03-01', 'NEW'),
+    (6, 2, 'VENDOR', 6, '2027-06-15', 'NEW');
 
 PRAGMA foreign_keys = ON;

@@ -1,34 +1,18 @@
 import { NavLink } from "react-router-dom";
-import {
-  LayoutDashboard,
-  Users,
-  DollarSign,
-  Clock,
-  Sparkles,
-} from "lucide-react";
 import type { LucideIcon } from "lucide-react";
 
-interface NavItem {
+export interface NavItem {
   to: string;
   label: string;
   shouldShow: boolean;
   icon: LucideIcon;
 }
 
-const navItems: NavItem[] = [
-  {
-    to: "/dashboard",
-    label: "Dashboard",
-    icon: LayoutDashboard,
-    shouldShow: true,
-  },
-  { to: "/company", label: "Company", icon: Users, shouldShow: false },
-  { to: "/vendors", label: "Vendors", icon: DollarSign, shouldShow: false },
-  { to: "/venues", label: "Venues", icon: Clock, shouldShow: false },
-  { to: "/onboarding", label: "Onboarding", icon: Sparkles, shouldShow: true },
-];
+interface SidebarProps {
+  navItems: NavItem[];
+}
 
-export default function Sidebar() {
+export default function Sidebar({ navItems }: SidebarProps) {
   return (
     <aside className="hidden md:flex w-64 flex-col bg-white border-r border-stone-200 h-screen p-4">
       <nav className="flex flex-col gap-1 mt-8">
@@ -55,7 +39,7 @@ export default function Sidebar() {
   );
 }
 
-export function MobileSidebar() {
+export function MobileSidebar({ navItems }: SidebarProps) {
   return (
     <aside className="flex md:hidden fixed bottom-0 left-0 right-0 bg-white border-t border-stone-200 p-2 z-50">
       <nav className="flex items-center justify-around w-full">

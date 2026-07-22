@@ -25,7 +25,7 @@ authRoute.post("/signup", async (c) => {
     }
 
     session.set("userId", user.id);
-    return c.json({ success, userId: user.id });
+    return c.json({ success, userId: user.id, user });
   } catch (error) {
     return c.json({ error: (error as Error).message }, 400);
   }
@@ -50,7 +50,7 @@ authRoute.post("/login", async (c) => {
 
     session.set("userId", user.id);
 
-    return c.json({ message: "Login successful", userId: user.id });
+    return c.json({ message: "Login successful", userId: user.id, user: user });
   } catch (error) {
     return c.json({ error: (error as Error).message }, 500);
   }

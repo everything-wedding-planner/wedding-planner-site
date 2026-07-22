@@ -1,64 +1,74 @@
 import { useAuth } from "../AuthProvider";
 import { useState, useEffect } from "react";
-import type { CompanyRow } from "../../../src/models/companyModel";
-import type { VendorRow } from "../../../src/models/vendorModel";
-import type { VenueRow } from "../../../src/models/venueModel";
+import {
+  InquiryStatus,
+  type InquiryRow,
+} from "../../../src/models/inquiryModel";
+import {
+  type BookingRow,
+  BookingStatus,
+} from "../../../src/models/bookingModel";
 import { Eye, MessageSquare, Calendar, Percent } from "lucide-react";
 import StatsCard from "../components/StatsCard";
 import Card from "../components/Card";
 import Badge from "../components/Badge";
 import DataTable from "../components/DataTable";
 import QuickActionCard from "../components/QuickActionCard";
-import {
-  mockStats,
-  mockInquiries,
-  mockBookings,
-  quickActions,
-} from "../data/dashboardMockData";
-import type { MockInquiry, MockBooking } from "../data/dashboardMockData";
+import { mockStats, quickActions } from "../data/dashboardMockData";
+import { useDashboardData } from "../components/DashboardDataProvider";
 
 export default function DashboardHome() {
+  const { company, vendor, venues } = useDashboardData();
+
   const { user } = useAuth();
-  const [company, setCompany] = useState<CompanyRow | null>(null);
-  const [vendors, setVendors] = useState<VendorRow[]>([]);
-  const [venues, setVenues] = useState<VenueRow[]>([]);
+
+  const [inquiries, setInquiries] = useState<InquiryRow[]>([]);
+  const [bookings, setBookings] = useState<BookingRow[]>([]);
 
   useEffect(() => {
-    fetch("/api/dashboard", { credentials: "include" })
+    fetch("/api/inquiries", { credentials: "include" })
       .then((res) => {
-        console.log(res);
         if (res.ok) return res.json();
         throw new Error();
       })
       .then((data) => {
-        setCompany(data.data.company);
-        setVendors(data.data.vendors);
-        setVenues(data.data.venues);
+        console.log("Inquiries data:", data);
+        setInquiries(data);
       })
       .catch((error) => {
-        setCompany(null);
-        setVendors([]);
-        setVenues([]);
-        console.error("Error fetching dashboard data:", error);
+        console.error("Error fetching inquiries data:", error);
+      });
+
+    fetch("/api/bookings", { credentials: "include" })
+      .then((res) => {
+        if (res.ok) return res.json();
+        throw new Error();
+      })
+      .then((data) => {
+        console.log("Bookings data:", data);
+        setBookings(data);
+      })
+      .catch((error) => {
+        console.error("Error fetching bookings data:", error);
       });
   }, []);
 
-  const companyName = "Your Business";
+  const companyName = company?.name ? company.name : "Your Company";
 
   const inquiryColumns = [
     {
-      key: "clientName",
+      key: "client_id",
       header: "Client",
-      render: (item: MockInquiry) => (
-        <span className="font-medium">{item.clientName}</span>
+      render: (item: InquiryRow) => (
+        <span className="font-medium">{item.client_id}</span>
       ),
     },
-    { key: "service", header: "Service" },
-    { key: "date", header: "Date" },
+    { key: "service_type", header: "Service" },
+    { key: "event_date", header: "Date" },
     {
       key: "status",
       header: "Status",
-      render: (item: MockInquiry) => (
+      render: (item: InquiryRow) => (
         <Badge variant={item.status}>
           {item.status.charAt(0).toUpperCase() + item.status.slice(1)}
         </Badge>
@@ -68,18 +78,18 @@ export default function DashboardHome() {
 
   const bookingColumns = [
     {
-      key: "clientName",
+      key: "client_id",
       header: "Client",
-      render: (item: MockBooking) => (
-        <span className="font-medium">{item.clientName}</span>
+      render: (item: BookingRow) => (
+        <span className="font-medium">{item.client_id}</span>
       ),
     },
-    { key: "service", header: "Service" },
-    { key: "date", header: "Date" },
+    { key: "service_type", header: "Service" },
+    { key: "event_date", header: "Date" },
     {
       key: "status",
       header: "Status",
-      render: (item: MockBooking) => (
+      render: (item: BookingRow) => (
         <Badge variant={item.status}>
           {item.status.charAt(0).toUpperCase() + item.status.slice(1)}
         </Badge>
@@ -129,14 +139,14 @@ export default function DashboardHome() {
         <Card title="Recent Inquiries">
           <DataTable
             columns={inquiryColumns}
-            data={mockInquiries}
+            data={inquiries}
             emptyMessage="No inquiries yet"
           />
         </Card>
         <Card title="Upcoming Bookings">
           <DataTable
             columns={bookingColumns}
-            data={mockBookings}
+            data={bookings}
             emptyMessage="No upcoming bookings"
           />
         </Card>

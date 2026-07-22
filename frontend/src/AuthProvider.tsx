@@ -4,7 +4,7 @@ import type { UserRow } from "../../src/models/Users/userModel";
 interface AuthContextType {
   userId: string | null;
   user: UserRow | null;
-  login: (id: string) => Promise<void>;
+  login: (id: string, user: UserRow) => Promise<void>;
   logout: () => Promise<void>;
   isLoading: boolean;
 }
@@ -36,7 +36,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
       .finally(() => setIsLoading(false));
   }, []);
 
-  const login = async (userId: string) => {
+  const login = async (userId: string, user: UserRow) => {
+    setUser(user);
     setUserId(userId);
   };
 
@@ -48,6 +49,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
       });
     } finally {
       setUserId(null);
+      setUser(null);
     }
   };
 

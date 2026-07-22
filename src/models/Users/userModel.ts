@@ -30,9 +30,7 @@ export class UserModel {
 
   async findUserByEmail(email: string): Promise<UserRow | null> {
     const result = await this.db
-      .prepare(
-        "SELECT id, username, email, password_hash, is_active FROM users WHERE email = ?",
-      )
+      .prepare("SELECT * FROM users WHERE email = ?")
       .bind(email)
       .first<UserRow>();
     return result || null;

@@ -1,4 +1,9 @@
-type BadgeVariant = "new" | "pending" | "confirmed" | "completed" | "responded" | "archived";
+import type { InquiryStatus } from "../../../src/models/inquiryModel";
+import type { BookingStatus } from "../../../src/models/bookingModel";
+
+type BadgeVariant =
+  | (typeof InquiryStatus)[keyof typeof InquiryStatus]
+  | (typeof BookingStatus)[keyof typeof BookingStatus];
 
 interface BadgeProps {
   variant: BadgeVariant;
@@ -6,12 +11,11 @@ interface BadgeProps {
 }
 
 const variantStyles: Record<BadgeVariant, string> = {
-  new: "bg-blue-50 text-blue-700",
-  pending: "bg-yellow-50 text-yellow-700",
-  confirmed: "bg-green-50 text-green-700",
-  completed: "bg-stone-100 text-stone-600",
-  responded: "bg-purple-50 text-purple-700",
-  archived: "bg-stone-50 text-stone-500",
+  NEW: "bg-blue-50 text-blue-700",
+  PENDING: "bg-yellow-50 text-yellow-700",
+  ACCEPTED: "bg-green-50 text-green-700",
+  REJECTED: "bg-purple-50 text-purple-700",
+  CANCELLED: "bg-stone-50 text-stone-500",
 };
 
 export default function Badge({ variant, children }: BadgeProps) {

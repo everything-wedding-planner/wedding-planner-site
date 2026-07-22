@@ -26,7 +26,7 @@ async function seedTestData(db: D1Database) {
 
   // Insert test users (all with password: password123)
   // Bcrypt hash of 'password123':
-  const hash = "$2a$10$N9qo8uLOickgx2ZMRZoMyeIjZAgcfl7p92ldGxad68LJZdL17lhWy";
+  const hash = "$2b$10$jjl2zt6BaJrEZX/9mcUYR.Xh8KnEgykNIyIhCdFyFTcT80v8gjcyq";
   await db
     .prepare(
       "INSERT INTO users (username, email, password_hash, is_active, completed_onboarding) VALUES (?, ?, ?, ?, ?)",
