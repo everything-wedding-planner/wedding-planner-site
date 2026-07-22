@@ -7,6 +7,8 @@ import { companyRoute } from "./controllers/companyController";
 import { venueRoute } from "./controllers/venueController";
 import { onboardingRoute } from "./controllers/onboardingController";
 import { dashboardRoute } from "./controllers/dashboardController";
+import { bookingRoute } from "./controllers/bookingController";
+import { inquiryRoute } from "./controllers/inquiryController";
 import { CookieStore, sessionMiddleware } from "hono-sessions";
 import type { AppBindings } from "./env";
 
@@ -34,6 +36,8 @@ app.route("/api/companies", companyRoute);
 app.route("/api/venues", venueRoute);
 app.route("/api/onboarding", onboardingRoute);
 app.route("/api/dashboard", dashboardRoute);
+app.route("/api/bookings", bookingRoute);
+app.route("/api/inquiries", inquiryRoute);
 
 app.get("/api/me", async (c) => {
   const session = c.get("session");

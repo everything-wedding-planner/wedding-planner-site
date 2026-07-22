@@ -52,7 +52,7 @@ export default function AuthPage() {
           setError(data.error || "Login failed");
           return;
         }
-        await login(data.userId);
+        await login(data.userId, data.user);
       } else {
         const res = await fetch("/api/auth/signup", {
           method: "POST",
@@ -68,7 +68,7 @@ export default function AuthPage() {
           setError(data.error || "Signup failed");
           return;
         }
-        await login(data.userId);
+        await login(data.userId, data.user);
       }
     } catch {
       setError("An unexpected error occurred");
