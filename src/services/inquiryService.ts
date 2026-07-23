@@ -39,7 +39,7 @@ export class InquiryService {
     const vendorModel = new VendorModel(this.db);
     const venueModel = new VenueModel(this.db);
 
-    const vendorData = await vendorModel.getVendorByCompanyId(companyData.id);
+    const vendorData = await vendorModel.getVendorsByCompanyId(companyData.id);
     const venueData = await venueModel.getVenuesByCompanyId(companyData.id);
 
     const vendorService = vendorData.length > 0 ? vendorData : null;

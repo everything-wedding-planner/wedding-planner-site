@@ -5,6 +5,8 @@ import { CompanyModel } from "../models/companyModel";
 import { VenueModel } from "../models/venueModel";
 import { UserModel } from "../models/Users/userModel";
 import { toCompanyResponseDTO, CompanyResponseDTO } from "../DTO/companyDTO";
+import { VendorService } from "../services/vendorService";
+import { VenueService } from "../services/venueService";
 import { toVendorResponseDTO, VendorResponseDTO } from "../DTO/vendorDTO";
 import { toVenueResponseDTO, VenueResponseDTO } from "../DTO/venueDTO";
 
@@ -30,7 +32,6 @@ dashboardRoute.get("/", async (c) => {
   }
 
   if (!user.completed_onboarding) {
-    console.log("User has not completed onboarding");
     return c.json({ success: true }, 200);
   }
 
@@ -45,23 +46,17 @@ dashboardRoute.get("/", async (c) => {
     db,
   );
 
-  const vendorModel = new VendorModel(db);
-  const venueModel = new VenueModel(db);
+  const venueService = new VenueService(c.env.DB);
+  let venues = await venueService.getVenueByCompanyId(company.id);
 
-  const vendors = await vendorModel.getVendorByCompanyId(company.id);
-  let vendorResponse: VendorResponseDTO[] = [];
-  if (vendors.length > 0) {
-    vendorResponse = await Promise.all(
-      vendors.map(async (vendor) => toVendorResponseDTO(vendor, db)),
-    );
+  if (venues instanceof Error) {
+    venues = [];
   }
 
-  const venues = await venueModel.getVenuesByCompanyId(company.id);
-  let venueResponse: VenueResponseDTO[] = [];
-  if (venues.length > 0) {
-    venueResponse = await Promise.all(
-      venues.map(async (venue) => toVenueResponseDTO(venue, db)),
-    );
+  const vendorService = new VendorService(c.env.DB);
+  let vendors = await vendorService.getVendorByCompanyId(company.id);
+  if (vendors instanceof Error) {
+    vendors = [];
   }
 
   return c.json({
@@ -69,8 +64,8 @@ dashboardRoute.get("/", async (c) => {
     data: {
       user,
       company: companyResponse,
-      vendors: vendorResponse,
-      venues: venueResponse,
+      vendors: vendors,
+      venues: venues,
     },
   });
 });

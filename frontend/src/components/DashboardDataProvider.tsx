@@ -8,6 +8,7 @@ interface DashboardDataContextType {
   vendors: VendorResponseDTO[] | null;
   venues: VenueResponseDTO[] | null;
   isLoading: boolean;
+  refetch: () => void;
 }
 
 const DashboardDataContext = createContext<
@@ -22,7 +23,8 @@ export const DashboardDataProvider: React.FC<{
   const [venues, setVenues] = useState<VenueResponseDTO[] | null>(null);
   const [isLoading, setIsLoading] = useState(true);
 
-  useEffect(() => {
+  const fetchData = () => {
+    setIsLoading(true);
     fetch("/api/dashboard", { credentials: "include" })
       .then((res) => {
         if (res.ok) return res.json();
@@ -40,10 +42,14 @@ export const DashboardDataProvider: React.FC<{
         console.error("Error fetching dashboard data:", error);
       })
       .finally(() => setIsLoading(false));
+  };
+
+  useEffect(() => {
+    fetchData();
   }, []);
 
   return (
-    <DashboardDataContext value={{ company, vendors, venues, isLoading }}>
+    <DashboardDataContext value={{ company, vendors, venues, isLoading, refetch: fetchData }}>
       {children}
     </DashboardDataContext>
   );
