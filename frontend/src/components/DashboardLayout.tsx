@@ -15,7 +15,7 @@ import {
 import { useAuth } from "../AuthProvider";
 
 function DashboardContent() {
-  const { company, vendor, venues } = useDashboardData();
+  const { company, vendors, venues } = useDashboardData();
   const { user } = useAuth();
 
   const navItems: NavItem[] = [
@@ -35,7 +35,7 @@ function DashboardContent() {
       to: "/vendors",
       label: "Vendors",
       icon: DollarSign,
-      shouldShow: vendor !== null,
+      shouldShow: vendors !== null && vendors.length > 0,
     },
     {
       to: "/venues",
@@ -47,7 +47,7 @@ function DashboardContent() {
       to: "/onboarding",
       label: "Onboarding",
       icon: Sparkles,
-      shouldShow: user?.completed_onboarding !== false,
+      shouldShow: user?.completed_onboarding === false,
     },
   ];
 

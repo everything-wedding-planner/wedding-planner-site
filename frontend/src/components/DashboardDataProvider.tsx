@@ -1,12 +1,12 @@
 import React, { createContext, useContext, useState, useEffect } from "react";
-import type { CompanyRow } from "../../../src/models/companyModel";
-import type { VendorRow } from "../../../src/models/vendorModel";
-import type { VenueRow } from "../../../src/models/venueModel";
+import type { CompanyResponseDTO } from "../../../src/DTO/companyDTO";
+import type { VendorResponseDTO } from "../../../src/DTO/vendorDTO";
+import type { VenueResponseDTO } from "../../../src/DTO/venueDTO";
 
 interface DashboardDataContextType {
-  company: CompanyRow | null;
-  vendor: VendorRow | null;
-  venues: VenueRow[] | null;
+  company: CompanyResponseDTO | null;
+  vendors: VendorResponseDTO[] | null;
+  venues: VenueResponseDTO[] | null;
   isLoading: boolean;
 }
 
@@ -17,9 +17,9 @@ const DashboardDataContext = createContext<
 export const DashboardDataProvider: React.FC<{
   children: React.ReactNode;
 }> = ({ children }) => {
-  const [company, setCompany] = useState<CompanyRow | null>(null);
-  const [vendor, setVendor] = useState<VendorRow | null>(null);
-  const [venues, setVenues] = useState<VenueRow[] | null>(null);
+  const [company, setCompany] = useState<CompanyResponseDTO | null>(null);
+  const [vendors, setVendors] = useState<VendorResponseDTO[] | null>(null);
+  const [venues, setVenues] = useState<VenueResponseDTO[] | null>(null);
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
@@ -30,12 +30,12 @@ export const DashboardDataProvider: React.FC<{
       })
       .then((data) => {
         setCompany(data.data.company);
-        setVendor(data.data.vendor);
+        setVendors(data.data.vendors);
         setVenues(data.data.venues);
       })
       .catch((error) => {
         setCompany(null);
-        setVendor(null);
+        setVendors(null);
         setVenues(null);
         console.error("Error fetching dashboard data:", error);
       })
@@ -43,7 +43,7 @@ export const DashboardDataProvider: React.FC<{
   }, []);
 
   return (
-    <DashboardDataContext value={{ company, vendor, venues, isLoading }}>
+    <DashboardDataContext value={{ company, vendors, venues, isLoading }}>
       {children}
     </DashboardDataContext>
   );

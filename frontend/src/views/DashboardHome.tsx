@@ -1,29 +1,30 @@
 import { useAuth } from "../AuthProvider";
-import { useState, useEffect } from "react";
-import {
-  InquiryStatus,
-  type InquiryRow,
-} from "../../../src/models/inquiryModel";
-import {
-  type BookingRow,
-  BookingStatus,
-} from "../../../src/models/bookingModel";
+import { useState, useEffect, useMemo } from "react";
 import { Eye, MessageSquare, Calendar, Percent } from "lucide-react";
 import StatsCard from "../components/StatsCard";
 import Card from "../components/Card";
 import Badge from "../components/Badge";
 import DataTable from "../components/DataTable";
+import FilterBar from "../components/FilterBar";
 import QuickActionCard from "../components/QuickActionCard";
 import { mockStats, quickActions } from "../data/dashboardMockData";
 import { useDashboardData } from "../components/DashboardDataProvider";
-
+import type { InquiryResponseDTO } from "../../../src/DTO/inquiryDTO";
+import type { BookingResponseDTO } from "../../../src/DTO/bookingDTO";
 export default function DashboardHome() {
-  const { company, vendor, venues } = useDashboardData();
+  const { company, vendors, venues } = useDashboardData();
 
   const { user } = useAuth();
 
-  const [inquiries, setInquiries] = useState<InquiryRow[]>([]);
-  const [bookings, setBookings] = useState<BookingRow[]>([]);
+  const [inquiries, setInquiries] = useState<InquiryResponseDTO[]>([]);
+  const [bookings, setBookings] = useState<BookingResponseDTO[]>([]);
+
+  const [inquiryDateFilter, setInquiryDateFilter] = useState("all");
+  const [inquiryStatusFilter, setInquiryStatusFilter] = useState("all");
+  const [inquiryServiceFilter, setInquiryServiceFilter] = useState("all");
+  const [bookingDateFilter, setBookingDateFilter] = useState("all");
+  const [bookingStatusFilter, setBookingStatusFilter] = useState("all");
+  const [bookingServiceFilter, setBookingServiceFilter] = useState("all");
 
   useEffect(() => {
     fetch("/api/inquiries", { credentials: "include" })
@@ -59,16 +60,35 @@ export default function DashboardHome() {
     {
       key: "client_id",
       header: "Client",
-      render: (item: InquiryRow) => (
-        <span className="font-medium">{item.client_id}</span>
+      render: (item: InquiryResponseDTO) => (
+        <span className="font-medium">
+          {item.client?.username || "Unknown"}
+        </span>
       ),
     },
-    { key: "service_type", header: "Service" },
+    {
+      key: "service_name",
+      header: "Service Name",
+      render: (item: InquiryResponseDTO) => (
+        <span className="font-medium">{item.service?.name || "Unknown"}</span>
+      ),
+    },
+    {
+      key: "service_type",
+      header: "Service",
+      render: (item: InquiryResponseDTO) => (
+        <span className="font-medium">
+          {item.service_type === "VENDOR"
+            ? item.service?.service_type || "Unknown"
+            : "Wedding"}
+        </span>
+      ),
+    },
     { key: "event_date", header: "Date" },
     {
       key: "status",
       header: "Status",
-      render: (item: InquiryRow) => (
+      render: (item: InquiryResponseDTO) => (
         <Badge variant={item.status}>
           {item.status.charAt(0).toUpperCase() + item.status.slice(1)}
         </Badge>
@@ -80,22 +100,108 @@ export default function DashboardHome() {
     {
       key: "client_id",
       header: "Client",
-      render: (item: BookingRow) => (
-        <span className="font-medium">{item.client_id}</span>
+      render: (item: BookingResponseDTO) => (
+        <span className="font-medium">
+          {item.client?.username || "Unknown"}
+        </span>
       ),
     },
-    { key: "service_type", header: "Service" },
+    {
+      key: "service_name",
+      header: "Service Name",
+      render: (item: BookingResponseDTO) => (
+        <span className="font-medium">{item.service?.name || "Unknown"}</span>
+      ),
+    },
+    {
+      key: "service_type",
+      header: "Service",
+      render: (item: BookingResponseDTO) => (
+        <span className="font-medium">
+          {item.service_type === "VENDOR"
+            ? item.service?.service_type || "Unknown"
+            : "Wedding"}
+        </span>
+      ),
+    },
     { key: "event_date", header: "Date" },
     {
       key: "status",
       header: "Status",
-      render: (item: BookingRow) => (
+      render: (item: BookingResponseDTO) => (
         <Badge variant={item.status}>
           {item.status.charAt(0).toUpperCase() + item.status.slice(1)}
         </Badge>
       ),
     },
   ];
+
+  function getDateRange(range: string): Date | null {
+    const now = new Date();
+    switch (range) {
+      case "today":
+        return new Date(now.getFullYear(), now.getMonth(), now.getDate());
+      case "week": {
+        const day = now.getDay();
+        const diff = now.getDate() - day + (day === 0 ? -6 : 1);
+        return new Date(now.getFullYear(), now.getMonth(), diff);
+      }
+      case "month":
+        return new Date(now.getFullYear(), now.getMonth(), 1);
+      case "year":
+        return new Date(now.getFullYear(), 0, 1);
+      default:
+        return null;
+    }
+  }
+
+  const inquiryStatusOptions = [
+    { value: "NEW", label: "New" },
+    { value: "ACCEPTED", label: "Accepted" },
+    { value: "REJECTED", label: "Rejected" },
+    { value: "CANCELLED", label: "Cancelled" },
+  ];
+
+  const bookingStatusOptions = [
+    { value: "PENDING", label: "Pending" },
+    { value: "ACCEPTED", label: "Accepted" },
+    { value: "REJECTED", label: "Rejected" },
+    { value: "CANCELLED", label: "Cancelled" },
+  ];
+
+  const filteredInquiries = useMemo(() => {
+    return inquiries.filter((item) => {
+      if (inquiryDateFilter !== "all") {
+        const range = getDateRange(inquiryDateFilter);
+        if (range && new Date(item.event_date) < range) return false;
+      }
+      if (inquiryStatusFilter !== "all" && item.status !== inquiryStatusFilter)
+        return false;
+      if (
+        inquiryServiceFilter !== "all" &&
+        item.service_type !== inquiryServiceFilter
+      )
+        return false;
+      return true;
+    });
+  }, [inquiries, inquiryDateFilter, inquiryStatusFilter, inquiryServiceFilter]);
+
+  const filteredBookings = useMemo(() => {
+    return bookings.filter((item) => {
+      if (bookingDateFilter !== "all") {
+        const range = getDateRange(bookingDateFilter);
+        if (range && new Date(item.event_date) < range) return false;
+      }
+      if (bookingStatusFilter !== "all" && item.status !== bookingStatusFilter)
+        return false;
+      if (
+        bookingServiceFilter !== "all" &&
+        item.service_type !== bookingServiceFilter
+      )
+        return false;
+      return true;
+    });
+  }, [bookings, bookingDateFilter, bookingStatusFilter, bookingServiceFilter]);
 
   return (
     <div className="space-y-4 sm:space-y-6">
@@ -137,17 +243,27 @@ export default function DashboardHome() {
       {/* Tables Row */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         <Card title="Recent Inquiries">
+          <FilterBar
+            statusFilter={inquiryStatusFilter}
+            onStatusFilterChange={setInquiryStatusFilter}
+            statusOptions={inquiryStatusOptions}
+          />
           <DataTable
             columns={inquiryColumns}
-            data={inquiries}
-            emptyMessage="No inquiries yet"
+            data={filteredInquiries}
+            emptyMessage="No inquiries match your filters"
           />
         </Card>
         <Card title="Upcoming Bookings">
+          <FilterBar
+            statusFilter={bookingStatusFilter}
+            onStatusFilterChange={setBookingStatusFilter}
+            statusOptions={bookingStatusOptions}
+          />
           <DataTable
             columns={bookingColumns}
-            data={bookings}
-            emptyMessage="No upcoming bookings"
+            data={filteredBookings}
+            emptyMessage="No bookings match your filters"
           />
         </Card>
       </div>
