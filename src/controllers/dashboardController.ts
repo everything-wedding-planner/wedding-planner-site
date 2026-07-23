@@ -4,6 +4,9 @@ import { VendorModel } from "../models/vendorModel";
 import { CompanyModel } from "../models/companyModel";
 import { VenueModel } from "../models/venueModel";
 import { UserModel } from "../models/Users/userModel";
+import { toCompanyResponseDTO, CompanyResponseDTO } from "../DTO/companyDTO";
+import { toVendorResponseDTO, VendorResponseDTO } from "../DTO/vendorDTO";
+import { toVenueResponseDTO, VenueResponseDTO } from "../DTO/venueDTO";
 
 import type { AppBindings } from "../env";
 
@@ -37,21 +40,37 @@ dashboardRoute.get("/", async (c) => {
   if (!company) {
     return c.json({ success: true }, 200);
   }
-  console.log(company);
+  const companyResponse: CompanyResponseDTO = await toCompanyResponseDTO(
+    company,
+    db,
+  );
+
   const vendorModel = new VendorModel(db);
   const venueModel = new VenueModel(db);
 
   const vendors = await vendorModel.getVendorByCompanyId(company.id);
+  let vendorResponse: VendorResponseDTO[] = [];
+  if (vendors.length > 0) {
+    vendorResponse = await Promise.all(
+      vendors.map(async (vendor) => toVendorResponseDTO(vendor, db)),
+    );
+  }
 
   const venues = await venueModel.getVenuesByCompanyId(company.id);
+  let venueResponse: VenueResponseDTO[] = [];
+  if (venues.length > 0) {
+    venueResponse = await Promise.all(
+      venues.map(async (venue) => toVenueResponseDTO(venue, db)),
+    );
+  }
 
   return c.json({
     success: true,
     data: {
       user,
-      company: company,
-      vendors: vendors,
-      venues: venues,
+      company: companyResponse,
+      vendors: vendorResponse,
+      venues: venueResponse,
     },
   });
 });

@@ -4,6 +4,10 @@ import {
   BookingRow,
   BookingStatus,
 } from "../models/bookingModel";
+import {
+  type BookingResponseDTO,
+  toBookingResponseDTO,
+} from "../DTO/bookingDTO";
 import { CompanyModel, CompanyServiceTypes } from "../models/companyModel";
 import { VendorModel } from "../models/vendorModel";
 import { VenueModel } from "../models/venueModel";
@@ -18,7 +22,9 @@ export class BookingService {
   }
 
   // Add methods for booking-related operations here
-  async getAllBookingsByUserId(userId: number): Promise<BookingRow[] | Error> {
+  async getAllBookingsByUserId(
+    userId: number,
+  ): Promise<BookingResponseDTO[] | Error> {
     // This can be moved into its own CompanyService
     const companyModel = new CompanyModel(this.db);
     const companyData = await companyModel.getCompanyByUserId(userId);
@@ -33,7 +39,13 @@ export class BookingService {
       return Error("No bookings found for the given company ID");
     }
 
-    return bookings;
+    const bookingDTOs: BookingResponseDTO[] = [];
+    for (const booking of bookings) {
+      const bookingDTO = await toBookingResponseDTO(booking, this.db);
+      bookingDTOs.push(bookingDTO);
+    }
+
+    return bookingDTOs;
   }
 
   async createBooking(

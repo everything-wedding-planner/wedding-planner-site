@@ -9,6 +9,11 @@ import {
   InquiryStatus,
 } from "../models/inquiryModel";
 
+import {
+  type InquiryResponseDTO,
+  toInquiryResponseDTO,
+} from "../DTO/inquiryDTO";
+
 export class InquiryService {
   private inquiryModel: InquiryModel;
   private db: D1Database;
@@ -20,7 +25,7 @@ export class InquiryService {
 
   async getAllInquiriesForAccountUser(
     userId: number,
-  ): Promise<InquiryRow[] | Error> {
+  ): Promise<InquiryResponseDTO[] | Error> {
     let inquiries: InquiryRow[] = [];
 
     // This can be moved into its own CompanyService
@@ -69,7 +74,13 @@ export class InquiryService {
       }
     }
 
-    return inquiries;
+    const inquiryDTOs: InquiryResponseDTO[] = [];
+    for (const inquiry of inquiries) {
+      const inquiryDTO = await toInquiryResponseDTO(inquiry, this.db);
+      inquiryDTOs.push(inquiryDTO);
+    }
+
+    return inquiryDTOs;
   }
 
   async createInquiry(
