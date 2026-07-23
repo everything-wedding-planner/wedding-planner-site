@@ -73,7 +73,7 @@ export class VendorModel {
     return this.getVendorById(newVendorId);
   }
 
-  async getVendorByCompanyId(companyId: number): Promise<VendorRow[]> {
+  async getVendorsByCompanyId(companyId: number): Promise<VendorRow[]> {
     const result = await this.db
       .prepare("SELECT * FROM vendor WHERE company_id = ?")
       .bind(companyId)

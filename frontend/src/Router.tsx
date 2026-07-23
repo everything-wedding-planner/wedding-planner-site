@@ -3,6 +3,7 @@ import AuthGuard from "./views/AuthGuard";
 import AuthPage from "./views/AuthPage";
 import DashboardLayout from "./components/DashboardLayout";
 import DashboardHome from "./views/DashboardHome";
+import CompanyPage from "./views/CompanyPage";
 import OnboardingPage from "./views/OnboardingPage";
 
 const FrontendRouter = createBrowserRouter([
@@ -21,6 +22,10 @@ const FrontendRouter = createBrowserRouter([
           {
             path: "dashboard",
             element: <DashboardHome />,
+          },
+          {
+            path: "company",
+            element: <CompanyPage />,
           },
           {
             index: true,
