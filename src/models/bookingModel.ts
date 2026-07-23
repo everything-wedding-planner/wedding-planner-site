@@ -13,6 +13,11 @@ export interface BookingRow {
   updated_at: Date;
 }
 
+export const BookingServiceTypes = {
+  venue: "VENUE",
+  vendor: "VENDOR",
+} as const;
+
 export const BookingStatus = {
   pending: "PENDING",
   accepted: "ACCEPTED",

@@ -12,6 +12,11 @@ export interface InquiryRow {
   updated_at: Date;
 }
 
+export const InquiryServiceTypes = {
+  venue: "VENUE",
+  vendor: "VENDOR",
+} as const;
+
 export const InquiryStatus = {
   new: "NEW",
   accepted: "ACCEPTED",
