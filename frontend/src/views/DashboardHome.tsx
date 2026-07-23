@@ -1,18 +1,11 @@
 import { useAuth } from "../AuthProvider";
-import { useState, useEffect } from "react";
-import {
-  InquiryStatus,
-  type InquiryRow,
-} from "../../../src/models/inquiryModel";
-import {
-  type BookingRow,
-  BookingStatus,
-} from "../../../src/models/bookingModel";
+import { useState, useEffect, useMemo } from "react";
 import { Eye, MessageSquare, Calendar, Percent } from "lucide-react";
 import StatsCard from "../components/StatsCard";
 import Card from "../components/Card";
 import Badge from "../components/Badge";
 import DataTable from "../components/DataTable";
+import FilterBar from "../components/FilterBar";
 import QuickActionCard from "../components/QuickActionCard";
 import { mockStats, quickActions } from "../data/dashboardMockData";
 import { useDashboardData } from "../components/DashboardDataProvider";
@@ -25,6 +18,13 @@ export default function DashboardHome() {
 
   const [inquiries, setInquiries] = useState<InquiryResponseDTO[]>([]);
   const [bookings, setBookings] = useState<BookingResponseDTO[]>([]);
+
+  const [inquiryDateFilter, setInquiryDateFilter] = useState("all");
+  const [inquiryStatusFilter, setInquiryStatusFilter] = useState("all");
+  const [inquiryServiceFilter, setInquiryServiceFilter] = useState("all");
+  const [bookingDateFilter, setBookingDateFilter] = useState("all");
+  const [bookingStatusFilter, setBookingStatusFilter] = useState("all");
+  const [bookingServiceFilter, setBookingServiceFilter] = useState("all");
 
   useEffect(() => {
     fetch("/api/inquiries", { credentials: "include" })
@@ -136,6 +136,73 @@ export default function DashboardHome() {
     },
   ];
 
+  function getDateRange(range: string): Date | null {
+    const now = new Date();
+    switch (range) {
+      case "today":
+        return new Date(now.getFullYear(), now.getMonth(), now.getDate());
+      case "week": {
+        const day = now.getDay();
+        const diff = now.getDate() - day + (day === 0 ? -6 : 1);
+        return new Date(now.getFullYear(), now.getMonth(), diff);
+      }
+      case "month":
+        return new Date(now.getFullYear(), now.getMonth(), 1);
+      case "year":
+        return new Date(now.getFullYear(), 0, 1);
+      default:
+        return null;
+    }
+  }
+
+  const inquiryStatusOptions = [
+    { value: "NEW", label: "New" },
+    { value: "ACCEPTED", label: "Accepted" },
+    { value: "REJECTED", label: "Rejected" },
+    { value: "CANCELLED", label: "Cancelled" },
+  ];
+
+  const bookingStatusOptions = [
+    { value: "PENDING", label: "Pending" },
+    { value: "ACCEPTED", label: "Accepted" },
+    { value: "REJECTED", label: "Rejected" },
+    { value: "CANCELLED", label: "Cancelled" },
+  ];
+
+  const filteredInquiries = useMemo(() => {
+    return inquiries.filter((item) => {
+      if (inquiryDateFilter !== "all") {
+        const range = getDateRange(inquiryDateFilter);
+        if (range && new Date(item.event_date) < range) return false;
+      }
+      if (inquiryStatusFilter !== "all" && item.status !== inquiryStatusFilter)
+        return false;
+      if (
+        inquiryServiceFilter !== "all" &&
+        item.service_type !== inquiryServiceFilter
+      )
+        return false;
+      return true;
+    });
+  }, [inquiries, inquiryDateFilter, inquiryStatusFilter, inquiryServiceFilter]);
+
+  const filteredBookings = useMemo(() => {
+    return bookings.filter((item) => {
+      if (bookingDateFilter !== "all") {
+        const range = getDateRange(bookingDateFilter);
+        if (range && new Date(item.event_date) < range) return false;
+      }
+      if (bookingStatusFilter !== "all" && item.status !== bookingStatusFilter)
+        return false;
+      if (
+        bookingServiceFilter !== "all" &&
+        item.service_type !== bookingServiceFilter
+      )
+        return false;
+      return true;
+    });
+  }, [bookings, bookingDateFilter, bookingStatusFilter, bookingServiceFilter]);
+
   return (
     <div className="space-y-4 sm:space-y-6">
       {/* Header */}
@@ -176,17 +243,27 @@ export default function DashboardHome() {
       {/* Tables Row */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         <Card title="Recent Inquiries">
+          <FilterBar
+            statusFilter={inquiryStatusFilter}
+            onStatusFilterChange={setInquiryStatusFilter}
+            statusOptions={inquiryStatusOptions}
+          />
           <DataTable
             columns={inquiryColumns}
-            data={inquiries}
-            emptyMessage="No inquiries yet"
+            data={filteredInquiries}
+            emptyMessage="No inquiries match your filters"
           />
         </Card>
         <Card title="Upcoming Bookings">
+          <FilterBar
+            statusFilter={bookingStatusFilter}
+            onStatusFilterChange={setBookingStatusFilter}
+            statusOptions={bookingStatusOptions}
+          />
           <DataTable
             columns={bookingColumns}
-            data={bookings}
-            emptyMessage="No upcoming bookings"
+            data={filteredBookings}
+            emptyMessage="No bookings match your filters"
           />
         </Card>
       </div>
