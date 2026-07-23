@@ -47,7 +47,7 @@ function DashboardContent() {
       to: "/onboarding",
       label: "Onboarding",
       icon: Sparkles,
-      shouldShow: user?.completed_onboarding !== false,
+      shouldShow: user?.completed_onboarding === false,
     },
   ];
 
