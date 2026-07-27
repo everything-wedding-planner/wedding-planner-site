@@ -5,6 +5,7 @@ import DashboardLayout from "./components/DashboardLayout";
 import DashboardHome from "./views/DashboardHome";
 import CompanyPage from "./views/CompanyPage";
 import VenueManagementPage from "./views/VenueManagementPage";
+import VendorManagementPage from "./views/VendorManagementPage";
 import OnboardingPage from "./views/OnboardingPage";
 
 const FrontendRouter = createBrowserRouter([
@@ -31,6 +32,10 @@ const FrontendRouter = createBrowserRouter([
           {
             path: "venues",
             element: <VenueManagementPage />,
+          },
+          {
+            path: "vendors",
+            element: <VendorManagementPage />,
           },
           {
             index: true,

@@ -3,6 +3,7 @@ import { D1Database } from "@cloudflare/workers-types";
 import { CompanyModel } from "../models/companyModel";
 
 export interface VendorResponseDTO {
+  id: number;
   company: string;
   name: string;
   contact_name: string;
@@ -17,11 +18,12 @@ export async function toVendorResponseDTO(
   vendor: VendorRow,
   d1: D1Database,
 ): Promise<VendorResponseDTO> {
-  const { id, company_id, ...rest } = vendor;
+  const { company_id, ...rest } = vendor;
   const companyModel = new CompanyModel(d1);
   const companyResults = await companyModel.getCompanyById(company_id);
 
   return {
+    id: rest.id,
     company: companyResults ? companyResults.name : "Unknown Company",
     name: rest.name,
     contact_name: rest.contact_name,

@@ -76,7 +76,7 @@ describe("VendorModel", () => {
       "Contact B",
     );
 
-    const vendors = await model.getVendorByCompanyId(company.id);
+    const vendors = await model.getVendorsByCompanyId(company.id);
     expect(vendors).toHaveLength(2);
     expect(vendors.map((v) => v.name)).toContain("Vendor A");
     expect(vendors.map((v) => v.name)).toContain("Vendor B");
@@ -87,7 +87,7 @@ describe("VendorModel", () => {
     const user = await seedUser(env.DB);
     const company = await seedCompany(env.DB, user.id);
 
-    const vendors = await model.getVendorByCompanyId(company.id);
+    const vendors = await model.getVendorsByCompanyId(company.id);
     expect(vendors).toEqual([]);
   });
 });
