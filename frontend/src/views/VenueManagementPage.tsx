@@ -1,4 +1,5 @@
 import { useState, useEffect, useCallback } from "react";
+import { useNavigate } from "react-router-dom";
 import { Plus, Loader2 } from "lucide-react";
 import Card from "../components/Card";
 import { useDashboardData } from "../components/DashboardDataProvider";
@@ -52,6 +53,7 @@ function validateForm(form: VenueFormData): string | null {
 
 export default function VenueManagementPage() {
   const { refetch } = useDashboardData();
+  const navigate = useNavigate();
   const [venues, setVenues] = useState<VenueWithMetrics[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -396,7 +398,12 @@ export default function VenueManagementPage() {
                       className="hover:bg-stone-50 border-b border-stone-100 last:border-0"
                     >
                       <td className="px-4 py-3 text-sm font-medium text-stone-900">
-                        {venue.name}
+                        <button
+                          onClick={() => navigate(`/venues/${venue.id}`)}
+                          className="text-rose-600 hover:text-rose-700 hover:underline"
+                        >
+                          {venue.name}
+                        </button>
                       </td>
                       <td className="px-4 py-3 text-sm text-stone-600">
                         {venue.address}
@@ -605,9 +612,12 @@ export default function VenueManagementPage() {
                     key={venue.id}
                     className="bg-white border border-stone-100 rounded-lg p-4"
                   >
-                    <p className="text-sm font-medium text-stone-900">
+                    <button
+                      onClick={() => navigate(`/venues/${venue.id}`)}
+                      className="text-sm font-medium text-rose-600 hover:text-rose-700 hover:underline"
+                    >
                       {venue.name}
-                    </p>
+                    </button>
                     <p className="text-sm text-stone-500">{venue.address}</p>
                     <p className="text-sm text-stone-500">
                       Capacity: {venue.capacity}

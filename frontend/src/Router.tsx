@@ -5,7 +5,9 @@ import DashboardLayout from "./components/DashboardLayout";
 import DashboardHome from "./views/DashboardHome";
 import CompanyPage from "./views/CompanyPage";
 import VenueManagementPage from "./views/VenueManagementPage";
+import VenueDetailPage from "./views/VenueDetailPage";
 import VendorManagementPage from "./views/VendorManagementPage";
+import VendorDetailPage from "./views/VendorDetailPage";
 import OnboardingPage from "./views/OnboardingPage";
 
 const FrontendRouter = createBrowserRouter([
@@ -34,8 +36,16 @@ const FrontendRouter = createBrowserRouter([
             element: <VenueManagementPage />,
           },
           {
+            path: "venues/:id",
+            element: <VenueDetailPage />,
+          },
+          {
             path: "vendors",
             element: <VendorManagementPage />,
+          },
+          {
+            path: "vendors/:id",
+            element: <VendorDetailPage />,
           },
           {
             index: true,
