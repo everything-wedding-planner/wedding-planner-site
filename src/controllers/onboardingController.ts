@@ -13,10 +13,6 @@ onboardingRoute.post("/submit", async (c) => {
   const session = c.get("session");
   const userId = session.get("userId");
 
-  if (!userId) {
-    return c.json({ error: "Unauthorized" }, 401);
-  }
-
   const { company, vendor, venue } = await c.req.json();
 
   if (!company) {

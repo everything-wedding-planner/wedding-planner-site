@@ -18,10 +18,6 @@ dashboardRoute.get("/", async (c) => {
   const session = c.get("session");
   const userId = session.get("userId");
 
-  if (!userId) {
-    return c.json({ error: "Unauthorized" }, 401);
-  }
-
   const db = c.env.DB;
 
   const userModel = new UserModel(db);

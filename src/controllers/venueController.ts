@@ -15,10 +15,6 @@ venueRoute.get("/", async (c) => {
   const session = c.get("session");
   const userId = session.get("userId");
 
-  if (!userId) {
-    return c.json({ error: "Unauthorized" }, 401);
-  }
-
   const companyService = new CompanyService(c.env.DB);
   const company = await companyService.getCompanyByUserId(userId);
   if (!company) {
@@ -62,10 +58,6 @@ venueRoute.post("/", async (c) => {
   const session = c.get("session");
   const userId = session.get("userId");
 
-  if (!userId) {
-    return c.json({ error: "Unauthorized" }, 401);
-  }
-
   const companyModel = new CompanyModel(c.env.DB);
   const company = await companyModel.getCompanyByUserId(userId);
 
@@ -105,10 +97,6 @@ venueRoute.post("/", async (c) => {
 venueRoute.put("/:id", async (c) => {
   const session = c.get("session");
   const userId = session.get("userId");
-
-  if (!userId) {
-    return c.json({ error: "Unauthorized" }, 401);
-  }
 
   const companyService = new CompanyService(c.env.DB);
   const company = await companyService.getCompanyByUserId(userId);
@@ -152,10 +140,6 @@ venueRoute.put("/:id", async (c) => {
 venueRoute.get("/:id/metrics", async (c) => {
   const session = c.get("session");
   const userId = session.get("userId");
-
-  if (!userId) {
-    return c.json({ error: "Unauthorized" }, 401);
-  }
 
   const companyModel = new CompanyModel(c.env.DB);
   const company = await companyModel.getCompanyByUserId(userId);

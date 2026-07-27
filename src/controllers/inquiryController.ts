@@ -9,10 +9,6 @@ inquiryRoute.get("/", async (c) => {
   const session = c.get("session");
   const userId = session.get("userId");
 
-  if (!userId) {
-    return c.json({ error: "Unauthorized" }, 401);
-  }
-
   const db = c.env.DB;
   const inquiryService = new InquiryService(db);
 

@@ -9,26 +9,15 @@ import { onboardingRoute } from "./controllers/onboardingController";
 import { dashboardRoute } from "./controllers/dashboardController";
 import { bookingRoute } from "./controllers/bookingController";
 import { inquiryRoute } from "./controllers/inquiryController";
-import { CookieStore, sessionMiddleware } from "hono-sessions";
 import type { AppBindings } from "./env";
+
+import { validUserMiddleware, customSessionMiddleware } from "./Middleware";
 
 const app = new Hono<AppBindings>();
 
 app.use("/api/*", cors());
-app.use("/api/*", async (c, next) => {
-  const middleware = sessionMiddleware({
-    store: new CookieStore(),
-    encryptionKey: c.env.SESSION_SECRET,
-    expireAfterSeconds: 60 * 60 * 24, // 1 day
-    cookieOptions: {
-      path: "/",
-      httpOnly: true,
-      secure: true,
-      sameSite: "Lax",
-    },
-  });
-  return middleware(c, next);
-});
+app.use("/api/*", customSessionMiddleware);
+app.use("/api/*", validUserMiddleware);
 
 app.route("/api/auth", authRoute);
 app.route("/api/vendors", vendorRoute);
@@ -44,10 +33,6 @@ app.get("/api/me", async (c) => {
   const db = c.env.DB;
 
   const userId = session.get("userId");
-
-  if (!userId) {
-    return c.json({ error: "Unauthorized" }, 401);
-  }
 
   const userModel = new UserModel(db);
   let user = await userModel.findUserById(userId);

@@ -15,10 +15,6 @@ vendorRoute.get("/", async (c) => {
   const session = c.get("session");
   const userId = session.get("userId");
 
-  if (!userId) {
-    return c.json({ error: "Unauthorized" }, 401);
-  }
-
   const companyService = new CompanyService(c.env.DB);
   const company = await companyService.getCompanyByUserId(userId);
   if (!company) {
@@ -62,10 +58,6 @@ vendorRoute.post("/", async (c) => {
   const session = c.get("session");
   const userId = session.get("userId");
 
-  if (!userId) {
-    return c.json({ error: "Unauthorized" }, 401);
-  }
-
   const companyModel = new CompanyModel(c.env.DB);
   const company = await companyModel.getCompanyByUserId(userId);
 
@@ -73,8 +65,7 @@ vendorRoute.post("/", async (c) => {
     return c.json({ error: "Company not found" }, 404);
   }
 
-  const { name, service_type, contact_name, email, phone } =
-    await c.req.json();
+  const { name, service_type, contact_name, email, phone } = await c.req.json();
 
   const vendorModel = new VendorModel(c.env.DB);
   const result = await vendorModel.createVendor(
@@ -105,10 +96,6 @@ vendorRoute.put("/:id", async (c) => {
   const session = c.get("session");
   const userId = session.get("userId");
 
-  if (!userId) {
-    return c.json({ error: "Unauthorized" }, 401);
-  }
-
   const companyService = new CompanyService(c.env.DB);
   const company = await companyService.getCompanyByUserId(userId);
 
@@ -117,8 +104,7 @@ vendorRoute.put("/:id", async (c) => {
   }
 
   const id = Number(c.req.param("id"));
-  const { name, service_type, contact_name, email, phone } =
-    await c.req.json();
+  const { name, service_type, contact_name, email, phone } = await c.req.json();
 
   const vendorService = new VendorService(c.env.DB);
   const vendor = await vendorService.getVendorById(id);
@@ -151,10 +137,6 @@ vendorRoute.get("/:id/metrics", async (c) => {
   const session = c.get("session");
   const userId = session.get("userId");
 
-  if (!userId) {
-    return c.json({ error: "Unauthorized" }, 401);
-  }
-
   const companyModel = new CompanyModel(c.env.DB);
   const company = await companyModel.getCompanyByUserId(userId);
 
@@ -175,14 +157,8 @@ vendorRoute.get("/:id/metrics", async (c) => {
   const bookingService = new BookingService(c.env.DB);
 
   const [inquiryCount, bookingCount] = await Promise.all([
-    inquiryService.getInquiryCountByServiceId(
-      id,
-      CompanyServiceTypes.vendor,
-    ),
-    bookingService.getBookingCountByServiceId(
-      id,
-      CompanyServiceTypes.vendor,
-    ),
+    inquiryService.getInquiryCountByServiceId(id, CompanyServiceTypes.vendor),
+    bookingService.getBookingCountByServiceId(id, CompanyServiceTypes.vendor),
   ]);
 
   return c.json({ inquiry_count: inquiryCount, booking_count: bookingCount });
