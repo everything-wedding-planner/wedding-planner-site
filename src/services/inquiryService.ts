@@ -23,6 +23,17 @@ export class InquiryService {
     this.inquiryModel = new InquiryModel(db);
   }
 
+  async getInquiryCountByServiceId(
+    serviceId: number,
+    serviceType: (typeof CompanyServiceTypes)[keyof typeof CompanyServiceTypes],
+  ): Promise<number> {
+    const inquiryCount = await this.inquiryModel.countInquiriesByServiceId(
+      serviceId,
+      serviceType,
+    );
+    return inquiryCount;
+  }
+
   async getAllInquiriesForAccountUser(
     userId: number,
   ): Promise<InquiryResponseDTO[] | Error> {

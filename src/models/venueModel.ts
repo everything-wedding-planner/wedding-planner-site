@@ -83,4 +83,22 @@ export class VenueModel {
       .all<VenueRow>();
     return results.results || [];
   }
+
+  async updateVenue(
+    id: number,
+    name: string,
+    address: string,
+    capacity: number,
+    contact_name: string,
+    contact_email: string,
+    contact_phone: string,
+  ): Promise<boolean> {
+    const result = await this.db
+      .prepare(
+        "UPDATE venue SET name = ?, address = ?, capacity = ?, contact_name = ?, contact_email = ?, contact_phone = ?, updated_at = datetime('now') WHERE id = ?",
+      )
+      .bind(name, address, capacity, contact_name, contact_email, contact_phone, id)
+      .run();
+    return result.success;
+  }
 }

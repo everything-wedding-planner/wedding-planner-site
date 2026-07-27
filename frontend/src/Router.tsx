@@ -4,6 +4,7 @@ import AuthPage from "./views/AuthPage";
 import DashboardLayout from "./components/DashboardLayout";
 import DashboardHome from "./views/DashboardHome";
 import CompanyPage from "./views/CompanyPage";
+import VenueManagementPage from "./views/VenueManagementPage";
 import OnboardingPage from "./views/OnboardingPage";
 
 const FrontendRouter = createBrowserRouter([
@@ -26,6 +27,10 @@ const FrontendRouter = createBrowserRouter([
           {
             path: "company",
             element: <CompanyPage />,
+          },
+          {
+            path: "venues",
+            element: <VenueManagementPage />,
           },
           {
             index: true,

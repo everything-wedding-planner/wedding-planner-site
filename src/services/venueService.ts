@@ -1,4 +1,4 @@
-import { VenueModel } from "../models/venueModel";
+import { VenueModel, VenueRow } from "../models/venueModel";
 import { D1Database } from "@cloudflare/workers-types";
 
 import { VenueResponseDTO, toVenueResponseDTO } from "../DTO/venueDTO";
@@ -28,6 +28,46 @@ export class VenueService {
       return venueDTOs;
     } catch (error) {
       return error as Error;
+    }
+  }
+
+  async getVenueById(id: number): Promise<VenueResponseDTO | Error> {
+    try {
+      const venue = await this.venueModel.getVenueById(id);
+
+      if (!venue) {
+        throw new Error("Venue not found");
+      }
+
+      const venueDTO = await toVenueResponseDTO(venue, this.db);
+      return venueDTO;
+    } catch (error) {
+      return error as Error;
+    }
+  }
+
+  async updateVenue(
+    id: number,
+    name: string,
+    address: string,
+    capacity: number,
+    contact_name: string,
+    email: string,
+    phone: string,
+  ): Promise<boolean> {
+    try {
+      const success = await this.venueModel.updateVenue(
+        id,
+        name,
+        address,
+        capacity,
+        contact_name,
+        email,
+        phone,
+      );
+      return success;
+    } catch (error) {
+      return false;
     }
   }
 }
