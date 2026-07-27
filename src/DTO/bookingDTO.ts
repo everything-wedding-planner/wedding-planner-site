@@ -12,6 +12,7 @@ import { VendorModel } from "../models/vendorModel";
 import { BookingServiceTypes } from "../models/bookingModel";
 
 export interface BookingResponseDTO {
+  id: number;
   client: UserResponseDTO | null;
   service_type: string;
   service: VendorResponseDTO | VenueResponseDTO | null;
@@ -25,7 +26,7 @@ export async function toBookingResponseDTO(
   booking: BookingRow,
   d1: D1Database,
 ): Promise<BookingResponseDTO> {
-  const { id, client_id, ...rest } = booking;
+  const { client_id, ...rest } = booking;
 
   const userModel = new UserModel(d1);
 
@@ -43,6 +44,7 @@ export async function toBookingResponseDTO(
   }
 
   return {
+    id: rest.id,
     client: client ? toUserResponseDTO(client) : null,
     service_type: rest.service_type,
     service,

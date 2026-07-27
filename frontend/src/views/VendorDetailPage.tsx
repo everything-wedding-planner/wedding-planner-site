@@ -2,11 +2,13 @@ import { useState, useEffect, useCallback } from "react";
 import { useParams, Link } from "react-router-dom";
 import { ArrowLeft, MessageSquare, Calendar } from "lucide-react";
 import Card from "../components/Card";
+import FilterBar from "../components/FilterBar";
 import StatsCard from "../components/StatsCard";
 import Badge from "../components/Badge";
 import StatusSelect from "../components/StatusSelect";
 import BookingCalendar from "../components/BookingCalendar";
-import type { Inquiry, Booking } from "../types";
+import type { InquiryResponseDTO } from "../../../src/DTO/inquiryDTO";
+import type { BookingResponseDTO } from "../../../src/DTO/bookingDTO";
 
 interface VendorDetail {
   id: number;
@@ -19,12 +21,15 @@ interface VendorDetail {
 export default function VendorDetailPage() {
   const { id } = useParams<{ id: string }>();
   const [vendor, setVendor] = useState<VendorDetail | null>(null);
-  const [inquiries, setInquiries] = useState<Inquiry[]>([]);
-  const [bookings, setBookings] = useState<Booking[]>([]);
+  const [inquiries, setInquiries] = useState<InquiryResponseDTO[]>([]);
+  const [bookings, setBookings] = useState<BookingResponseDTO[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [expandedInquiry, setExpandedInquiry] = useState<number | null>(null);
   const [expandedBooking, setExpandedBooking] = useState<number | null>(null);
+
+  const [inquiryStatusFilter, setInquiryStatusFilter] = useState("all");
+  const [bookingStatusFilter, setBookingStatusFilter] = useState("all");
 
   const fetchData = useCallback(async () => {
     setIsLoading(true);
@@ -38,7 +43,7 @@ export default function VendorDetailPage() {
 
       if (!vendorRes.ok) throw new Error("Failed to fetch vendor");
       const vendorData = await vendorRes.json();
-      setVendor(vendorData);
+      setVendor(vendorData.vendor);
 
       if (inquiriesRes.ok) {
         const inquiriesData = await inquiriesRes.json();
@@ -68,7 +73,7 @@ export default function VendorDetailPage() {
     setInquiries((prev) =>
       prev.map((i) =>
         i.id === inquiryId
-          ? { ...i, status: newStatus as Inquiry["status"] }
+          ? { ...i, status: newStatus as InquiryResponseDTO["status"] }
           : i,
       ),
     );
@@ -94,7 +99,7 @@ export default function VendorDetailPage() {
     setBookings((prev) =>
       prev.map((b) =>
         b.id === bookingId
-          ? { ...b, status: newStatus as Booking["status"] }
+          ? { ...b, status: newStatus as BookingResponseDTO["status"] }
           : b,
       ),
     );
@@ -111,6 +116,32 @@ export default function VendorDetailPage() {
       setBookings(previous);
     }
   };
+
+  const filteredInquiries = inquiries.filter((inquiry) =>
+    inquiryStatusFilter === "all"
+      ? true
+      : inquiry.status === inquiryStatusFilter,
+  );
+
+  const filteredBookings = bookings.filter((booking) =>
+    bookingStatusFilter === "all"
+      ? true
+      : booking.status === bookingStatusFilter,
+  );
+
+  const inquiryStatusOptions = [
+    { value: "NEW", label: "New" },
+    { value: "ACCEPTED", label: "Accepted" },
+    { value: "REJECTED", label: "Rejected" },
+    { value: "CANCELLED", label: "Cancelled" },
+  ];
+
+  const bookingStatusOptions = [
+    { value: "PENDING", label: "Pending" },
+    { value: "ACCEPTED", label: "Accepted" },
+    { value: "REJECTED", label: "Rejected" },
+    { value: "CANCELLED", label: "Cancelled" },
+  ];
 
   if (isLoading) {
     return (
@@ -161,11 +192,7 @@ export default function VendorDetailPage() {
           value={inquiries.length}
           icon={MessageSquare}
         />
-        <StatsCard
-          label="Bookings"
-          value={bookings.length}
-          icon={Calendar}
-        />
+        <StatsCard label="Bookings" value={bookings.length} icon={Calendar} />
       </div>
 
       {/* Inquiries section */}
@@ -176,6 +203,11 @@ export default function VendorDetailPage() {
           </p>
         ) : (
           <>
+            <FilterBar
+              statusFilter={inquiryStatusFilter}
+              onStatusFilterChange={setInquiryStatusFilter}
+              statusOptions={inquiryStatusOptions}
+            />
             {/* Desktop table */}
             <table className="hidden sm:table w-full">
               <thead>
@@ -192,7 +224,7 @@ export default function VendorDetailPage() {
                 </tr>
               </thead>
               <tbody>
-                {inquiries.map((inquiry) => (
+                {filteredInquiries.map((inquiry) => (
                   <InquiryRow
                     key={inquiry.id}
                     inquiry={inquiry}
@@ -210,7 +242,7 @@ export default function VendorDetailPage() {
 
             {/* Mobile cards */}
             <div className="sm:hidden space-y-3">
-              {inquiries.map((inquiry) => (
+              {filteredInquiries.map((inquiry) => (
                 <InquiryCard
                   key={inquiry.id}
                   inquiry={inquiry}
@@ -236,6 +268,11 @@ export default function VendorDetailPage() {
           </p>
         ) : (
           <>
+            <FilterBar
+              statusFilter={bookingStatusFilter}
+              onStatusFilterChange={setBookingStatusFilter}
+              statusOptions={bookingStatusOptions}
+            />
             {/* Desktop table */}
             <table className="hidden sm:table w-full">
               <thead>
@@ -252,7 +289,7 @@ export default function VendorDetailPage() {
                 </tr>
               </thead>
               <tbody>
-                {bookings.map((booking) => (
+                {filteredBookings.map((booking) => (
                   <BookingRow
                     key={booking.id}
                     booking={booking}
@@ -270,7 +307,7 @@ export default function VendorDetailPage() {
 
             {/* Mobile cards */}
             <div className="sm:hidden space-y-3">
-              {bookings.map((booking) => (
+              {filteredBookings.map((booking) => (
                 <BookingCard
                   key={booking.id}
                   booking={booking}
@@ -289,7 +326,7 @@ export default function VendorDetailPage() {
       </Card>
 
       {/* Calendar */}
-      <BookingCalendar bookings={bookings} />
+      <BookingCalendar bookings={filteredBookings} />
     </div>
   );
 }
@@ -302,7 +339,7 @@ function InquiryRow({
   onToggle,
   onStatusChange,
 }: {
-  inquiry: Inquiry;
+  inquiry: InquiryResponseDTO;
   isExpanded: boolean;
   onToggle: () => void;
   onStatusChange: (id: number, status: string) => void;
@@ -331,12 +368,19 @@ function InquiryRow({
       </tr>
       {isExpanded && (
         <tr>
-          <td colSpan={3} className="bg-stone-50 px-4 py-3 text-sm text-stone-600">
+          <td
+            colSpan={3}
+            className="bg-stone-50 px-4 py-3 text-sm text-stone-600"
+          >
             <div className="grid grid-cols-2 gap-2">
-              <span>Client ID: {inquiry.client_id}</span>
+              <span>Client ID: {inquiry.client?.username}</span>
               <span>Service Type: {inquiry.service_type}</span>
-              <span>Created: {new Date(inquiry.created_at).toLocaleString()}</span>
-              <span>Updated: {new Date(inquiry.updated_at).toLocaleString()}</span>
+              <span>
+                Created: {new Date(inquiry.created_at).toLocaleString()}
+              </span>
+              <span>
+                Updated: {new Date(inquiry.updated_at).toLocaleString()}
+              </span>
             </div>
           </td>
         </tr>
@@ -351,7 +395,7 @@ function InquiryCard({
   onToggle,
   onStatusChange,
 }: {
-  inquiry: Inquiry;
+  inquiry: InquiryResponseDTO;
   isExpanded: boolean;
   onToggle: () => void;
   onStatusChange: (id: number, status: string) => void;
@@ -375,7 +419,7 @@ function InquiryCard({
       </div>
       {isExpanded && (
         <div className="mt-3 pt-3 border-t border-stone-100 text-sm text-stone-600 space-y-1">
-          <p>Client ID: {inquiry.client_id}</p>
+          <p>Client ID: {inquiry.client?.username}</p>
           <p>Service Type: {inquiry.service_type}</p>
           <p>Created: {new Date(inquiry.created_at).toLocaleString()}</p>
           <p>Updated: {new Date(inquiry.updated_at).toLocaleString()}</p>
@@ -393,7 +437,7 @@ function BookingRow({
   onToggle,
   onStatusChange,
 }: {
-  booking: Booking;
+  booking: BookingResponseDTO;
   isExpanded: boolean;
   onToggle: () => void;
   onStatusChange: (id: number, status: string) => void;
@@ -422,12 +466,19 @@ function BookingRow({
       </tr>
       {isExpanded && (
         <tr>
-          <td colSpan={3} className="bg-stone-50 px-4 py-3 text-sm text-stone-600">
+          <td
+            colSpan={3}
+            className="bg-stone-50 px-4 py-3 text-sm text-stone-600"
+          >
             <div className="grid grid-cols-2 gap-2">
-              <span>Client ID: {booking.client_id}</span>
+              <span>Client ID: {booking.client?.username}</span>
               <span>Service Type: {booking.service_type}</span>
-              <span>Created: {new Date(booking.created_at).toLocaleString()}</span>
-              <span>Updated: {new Date(booking.updated_at).toLocaleString()}</span>
+              <span>
+                Created: {new Date(booking.created_at).toLocaleString()}
+              </span>
+              <span>
+                Updated: {new Date(booking.updated_at).toLocaleString()}
+              </span>
             </div>
           </td>
         </tr>
@@ -442,7 +493,7 @@ function BookingCard({
   onToggle,
   onStatusChange,
 }: {
-  booking: Booking;
+  booking: BookingResponseDTO;
   isExpanded: boolean;
   onToggle: () => void;
   onStatusChange: (id: number, status: string) => void;
@@ -466,7 +517,7 @@ function BookingCard({
       </div>
       {isExpanded && (
         <div className="mt-3 pt-3 border-t border-stone-100 text-sm text-stone-600 space-y-1">
-          <p>Client ID: {booking.client_id}</p>
+          <p>Client ID: {booking.client?.username}</p>
           <p>Service Type: {booking.service_type}</p>
           <p>Created: {new Date(booking.created_at).toLocaleString()}</p>
           <p>Updated: {new Date(booking.updated_at).toLocaleString()}</p>

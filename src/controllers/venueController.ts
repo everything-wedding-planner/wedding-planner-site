@@ -110,7 +110,6 @@ venueRoute.get("/:id", async (c) => {
   if (!venue) {
     return c.json({ error: "Venue not found" }, 404);
   }
-
   return c.json({
     venue,
   });
