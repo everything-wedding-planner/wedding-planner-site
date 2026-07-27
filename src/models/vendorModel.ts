@@ -81,4 +81,21 @@ export class VendorModel {
 
     return result.results || [];
   }
+
+  async updateVendor(
+    id: number,
+    name: string,
+    service_type: string,
+    contact_name: string,
+    contact_email: string,
+    contact_phone: string,
+  ): Promise<boolean> {
+    const result = await this.db
+      .prepare(
+        "UPDATE vendor SET name = ?, service_type = ?, contact_name = ?, contact_email = ?, contact_phone = ?, updated_at = datetime('now') WHERE id = ?",
+      )
+      .bind(name, service_type, contact_name, contact_email, contact_phone, id)
+      .run();
+    return result.success;
+  }
 }

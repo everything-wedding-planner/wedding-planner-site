@@ -30,4 +30,42 @@ export class VendorService {
       return error as Error;
     }
   }
+
+  async getVendorById(id: number): Promise<VendorResponseDTO | Error> {
+    try {
+      const vendor = await this.vendorModel.getVendorById(id);
+
+      if (!vendor) {
+        throw new Error("Vendor not found");
+      }
+
+      const vendorDTO = await toVendorResponseDTO(vendor, this.db);
+      return vendorDTO;
+    } catch (error) {
+      return error as Error;
+    }
+  }
+
+  async updateVendor(
+    id: number,
+    name: string,
+    service_type: string,
+    contact_name: string,
+    contact_email: string,
+    contact_phone: string,
+  ): Promise<boolean> {
+    try {
+      const success = await this.vendorModel.updateVendor(
+        id,
+        name,
+        service_type,
+        contact_name,
+        contact_email,
+        contact_phone,
+      );
+      return success;
+    } catch {
+      return false;
+    }
+  }
 }
