@@ -59,6 +59,27 @@ export class BookingService {
     return bookingCount;
   }
 
+  async getBookingsByServiceId(
+    serviceId: number,
+    serviceType: (typeof CompanyServiceTypes)[keyof typeof CompanyServiceTypes],
+  ): Promise<BookingResponseDTO[] | null> {
+    const bookings = await this.bookingModel.getAllBookingsByServiceId(
+      serviceId,
+      serviceType,
+    );
+    if (!bookings) {
+      return null;
+    }
+
+    const BookingDTOs: BookingResponseDTO[] = [];
+    for (const booking of bookings) {
+      const bookingDTO = await toBookingResponseDTO(booking, this.db);
+      BookingDTOs.push(bookingDTO);
+    }
+
+    return BookingDTOs;
+  }
+
   async createBooking(
     clientId: number,
     serviceType: (typeof CompanyServiceTypes)[keyof typeof CompanyServiceTypes],
@@ -95,5 +116,12 @@ export class BookingService {
       serviceId,
       eventDate,
     );
+  }
+
+  async updateBookingStatus(
+    bookingId: number,
+    newStatus: (typeof BookingStatus)[keyof typeof BookingStatus],
+  ): Promise<boolean> {
+    return await this.bookingModel.updateBookingStatus(bookingId, newStatus);
   }
 }

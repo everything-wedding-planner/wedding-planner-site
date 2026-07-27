@@ -94,6 +94,67 @@ venueRoute.post("/", async (c) => {
   );
 });
 
+venueRoute.get("/:id", async (c) => {
+  const session = c.get("session");
+  const userId = session.get("userId");
+
+  const id = Number(c.req.param("id"));
+
+  const venueService = new VenueService(c.env.DB);
+  const venue = await venueService.getVenueById(id);
+
+  if (venue instanceof Error) {
+    return c.json({ error: venue.message }, 500);
+  }
+
+  if (!venue) {
+    return c.json({ error: "Venue not found" }, 404);
+  }
+
+  return c.json({
+    venue,
+  });
+});
+
+venueRoute.get("/:id/inquiries", async (c) => {
+  const session = c.get("session");
+  const userId = session.get("userId");
+
+  const id = Number(c.req.param("id"));
+
+  const inquiryService = new InquiryService(c.env.DB);
+  const inquiries = await inquiryService.getInquiriesByServiceId(
+    id,
+    CompanyServiceTypes.venue,
+  );
+
+  if (inquiries instanceof Error) {
+    return c.json({ error: inquiries.message }, 500);
+  }
+
+  return c.json({ inquiries });
+});
+
+venueRoute.get("/:id/bookings", async (c) => {
+  const session = c.get("session");
+  const userId = session.get("userId");
+
+  const id = Number(c.req.param("id"));
+
+  const bookingService = new BookingService(c.env.DB);
+
+  const bookings = await bookingService.getBookingsByServiceId(
+    id,
+    CompanyServiceTypes.venue,
+  );
+
+  if (bookings instanceof Error) {
+    return c.json({ error: bookings.message }, 500);
+  }
+
+  return c.json({ bookings });
+});
+
 venueRoute.put("/:id", async (c) => {
   const session = c.get("session");
   const userId = session.get("userId");
