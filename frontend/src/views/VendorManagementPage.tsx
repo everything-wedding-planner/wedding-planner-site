@@ -1,4 +1,5 @@
 import { useState, useEffect, useCallback } from "react";
+import { useNavigate } from "react-router-dom";
 import { Plus, Loader2 } from "lucide-react";
 import Card from "../components/Card";
 
@@ -46,6 +47,7 @@ function validateForm(form: VendorFormData): string | null {
 }
 
 export default function VendorManagementPage() {
+  const navigate = useNavigate();
   const [vendors, setVendors] = useState<VendorWithMetrics[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -335,7 +337,12 @@ export default function VendorManagementPage() {
                       className="hover:bg-stone-50 border-b border-stone-100 last:border-0"
                     >
                       <td className="px-4 py-3 text-sm font-medium text-stone-900">
-                        {vendor.name}
+                        <button
+                          onClick={() => navigate(`/vendors/${vendor.id}`)}
+                          className="text-rose-600 hover:text-rose-700 hover:underline"
+                        >
+                          {vendor.name}
+                        </button>
                       </td>
                       <td className="px-4 py-3 text-sm text-stone-600">
                         {vendor.service_type}
@@ -525,9 +532,12 @@ export default function VendorManagementPage() {
                     key={vendor.id}
                     className="bg-white border border-stone-100 rounded-lg p-4"
                   >
-                    <p className="text-sm font-medium text-stone-900">
+                    <button
+                      onClick={() => navigate(`/vendors/${vendor.id}`)}
+                      className="text-sm font-medium text-rose-600 hover:text-rose-700 hover:underline"
+                    >
                       {vendor.name}
-                    </p>
+                    </button>
                     <p className="text-sm text-stone-500">
                       {vendor.service_type}
                     </p>

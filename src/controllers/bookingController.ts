@@ -2,6 +2,7 @@ import { Hono } from "hono";
 
 import { BookingService } from "../services/bookingService";
 import { AppBindings } from "../env";
+import { BookingStatus } from "../models/bookingModel";
 
 export const bookingRoute = new Hono<AppBindings>();
 
@@ -40,4 +41,27 @@ bookingRoute.post("/create", async (c) => {
   }
 
   return c.json({ success: true }, 201);
+});
+
+bookingRoute.patch("/:id/status", async (c) => {
+  const id = Number(c.req.param("id"));
+  const { status } = await c.req.json();
+
+  if (!id || !status) {
+    return c.json({ error: "Missing required parameters" }, 400);
+  }
+
+  // Validate the status value
+  if (!Object.values(BookingStatus).includes(status)) {
+    return c.json({ error: "Invalid status value" }, 400);
+  }
+
+  const bookingService = new BookingService(c.env.DB);
+  const result = await bookingService.updateBookingStatus(id, status);
+
+  if (result) {
+    return c.json({ success: true });
+  }
+
+  return c.json({ error: "Failed to update booking status" }, 500);
 });

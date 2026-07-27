@@ -94,6 +94,27 @@ export class InquiryService {
     return inquiryDTOs;
   }
 
+  async getInquiriesByServiceId(
+    serviceId: number,
+    serviceType: (typeof CompanyServiceTypes)[keyof typeof CompanyServiceTypes],
+  ): Promise<InquiryResponseDTO[] | null> {
+    const inquiries = await this.inquiryModel.getAllInquiriesByServiceId(
+      serviceId,
+      serviceType,
+    );
+    if (!inquiries) {
+      return null;
+    }
+
+    const inquiryDTOs: InquiryResponseDTO[] = [];
+    for (const inquiry of inquiries) {
+      const inquiryDTO = await toInquiryResponseDTO(inquiry, this.db);
+      inquiryDTOs.push(inquiryDTO);
+    }
+
+    return inquiryDTOs;
+  }
+
   async createInquiry(
     serviceId: number,
     serviceType: (typeof CompanyServiceTypes)[keyof typeof CompanyServiceTypes],
@@ -106,5 +127,12 @@ export class InquiryService {
       userId,
       eventDate,
     );
+  }
+
+  async updateInquiryStatus(
+    inquiryId: number,
+    status: (typeof InquiryStatus)[keyof typeof InquiryStatus],
+  ): Promise<boolean> {
+    return await this.inquiryModel.updateInquiryStatus(inquiryId, status);
   }
 }

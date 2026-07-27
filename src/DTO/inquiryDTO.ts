@@ -10,6 +10,7 @@ import { VendorResponseDTO, toVendorResponseDTO } from "./vendorDTO";
 import { VendorModel } from "../models/vendorModel";
 
 export interface InquiryResponseDTO {
+  id: number;
   client: UserResponseDTO | null;
   service_type: string;
   service: VendorResponseDTO | VenueResponseDTO | null;
@@ -23,7 +24,7 @@ export async function toInquiryResponseDTO(
   inquiry: InquiryRow,
   d1: D1Database,
 ): Promise<InquiryResponseDTO> {
-  const { id, client_id, ...rest } = inquiry;
+  const { client_id, ...rest } = inquiry;
 
   const userModel = new UserModel(d1);
 
@@ -41,6 +42,7 @@ export async function toInquiryResponseDTO(
   }
 
   return {
+    id: rest.id,
     client: client ? toUserResponseDTO(client) : null,
     service_type: rest.service_type,
     service,
