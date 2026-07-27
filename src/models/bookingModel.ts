@@ -101,4 +101,18 @@ export class BookingModel {
 
     return result.success;
   }
+
+  async getBookingCountByServiceId(
+    serviceId: number,
+    serviceType: (typeof CompanyServiceTypes)[keyof typeof CompanyServiceTypes],
+  ): Promise<number> {
+    const result = await this.db
+      .prepare(
+        "SELECT COUNT(*) as count FROM bookings WHERE service_id = ? AND service_type = ?",
+      )
+      .bind(serviceId, serviceType)
+      .first<{ count: number }>();
+
+    return result?.count ?? 0;
+  }
 }

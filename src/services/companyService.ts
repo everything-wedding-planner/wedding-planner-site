@@ -11,6 +11,14 @@ export class CompanyService {
     this.companyModel = new CompanyModel(db);
   }
 
+  async getCompanyByUserId(userId: number): Promise<CompanyResponseDTO | null> {
+    const company = await this.companyModel.getCompanyByUserId(userId);
+    if (company) {
+      return await toCompanyResponseDTO(company, this.db);
+    }
+    return null;
+  }
+
   async getUsersCompany(
     userId: number,
     companyId: number,

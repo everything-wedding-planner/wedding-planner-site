@@ -48,6 +48,17 @@ export class BookingService {
     return bookingDTOs;
   }
 
+  async getBookingCountByServiceId(
+    serviceId: number,
+    serviceType: (typeof CompanyServiceTypes)[keyof typeof CompanyServiceTypes],
+  ): Promise<number> {
+    const bookingCount = await this.bookingModel.getBookingCountByServiceId(
+      serviceId,
+      serviceType,
+    );
+    return bookingCount;
+  }
+
   async createBooking(
     clientId: number,
     serviceType: (typeof CompanyServiceTypes)[keyof typeof CompanyServiceTypes],

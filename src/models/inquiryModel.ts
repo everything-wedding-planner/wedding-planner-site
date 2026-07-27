@@ -89,4 +89,18 @@ export class InquiryModel {
 
     return result.success;
   }
+
+  async countInquiriesByServiceId(
+    serviceId: number,
+    serviceType: (typeof CompanyServiceTypes)[keyof typeof CompanyServiceTypes],
+  ): Promise<number> {
+    const result = await this.db
+      .prepare(
+        "SELECT COUNT(*) as count FROM inquiries WHERE service_id = ? AND service_type = ?",
+      )
+      .bind(serviceId, serviceType)
+      .first<{ count: number }>();
+
+    return result?.count ?? 0;
+  }
 }

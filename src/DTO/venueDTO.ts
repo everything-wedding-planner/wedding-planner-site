@@ -3,6 +3,7 @@ import { D1Database } from "@cloudflare/workers-types";
 import { CompanyModel } from "../models/companyModel";
 
 export interface VenueResponseDTO {
+  id: number;
   company: string;
   name: string;
   address: string;
@@ -18,11 +19,12 @@ export async function toVenueResponseDTO(
   venue: VenueRow,
   d1: D1Database,
 ): Promise<VenueResponseDTO> {
-  const { id, company_id, ...rest } = venue;
+  const { company_id, ...rest } = venue;
   const companyModel = new CompanyModel(d1);
   const companyResults = await companyModel.getCompanyById(company_id);
 
   return {
+    id: rest.id,
     company: companyResults ? companyResults.name : "Unknown Company",
     name: rest.name,
     address: rest.address,
