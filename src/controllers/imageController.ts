@@ -40,6 +40,30 @@ imageRoute.delete("/:id", async (c) => {
   return c.json({ success: true });
 });
 
+imageRoute.put("/reorder", async (c) => {
+  const { referenceType, referenceId, items } = await c.req.json();
+
+  if (!referenceType || !referenceId || !items) {
+    return c.json({ error: "Missing required parameters" }, 400);
+  }
+
+  // Lets assert that referenceType is a valid CompanyServiceTypes value
+  if (!Object.values(CompanyServiceTypes).includes(referenceType as any)) {
+    return c.json({ error: "Invalid referenceType value" }, 400);
+  }
+
+  const imageService = new ImageService(c.env.DB, c.env.R2_BUCKET);
+  const result = await imageService.reorderImages(
+    referenceType,
+    Number(referenceId),
+    items,
+  );
+  if (!result) {
+    return c.json({ error: "Failed to reorder images" }, 500);
+  }
+  return c.json({ success: true });
+});
+
 imageRoute.post("", async (c) => {
   const formData = await c.req.formData();
   const file = formData.get("file") as File | null;

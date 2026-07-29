@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
-import { Plus, Loader2 } from "lucide-react";
+import { Plus, Loader2, ImageIcon } from "lucide-react";
 import Card from "../components/Card";
 import { useDashboardData } from "../components/DashboardDataProvider";
 
@@ -17,6 +17,7 @@ interface VenueWithMetrics {
   booking_count: number;
   created_at: Date;
   updated_at: Date;
+  thumbnail_url?: string;
 }
 
 interface VenueFormData {
@@ -262,6 +263,23 @@ export default function VenueManagementPage() {
   );
 
   const columns = [
+    // {
+    //   key: "thumbnail",
+    //   header: "Photo",
+    //   render: (item: VenueWithMetrics) => (
+    //     item.thumbnail_url ? (
+    //       <img
+    //         src={item.thumbnail_url}
+    //         alt=""
+    //         className="w-12 h-12 rounded-md object-cover"
+    //       />
+    //     ) : (
+    //       <div className="w-12 h-12 rounded-md bg-stone-100 flex items-center justify-center">
+    //         <ImageIcon className="text-gray-300" size={20} />
+    //       </div>
+    //     )
+    //   ),
+    // },
     {
       key: "name",
       header: "Name",
@@ -369,7 +387,7 @@ export default function VenueManagementPage() {
                   {columns.map((col) => (
                     <th
                       key={col.key}
-                      className="text-left text-xs font-medium text-stone-500 uppercase tracking-wider border-b border-stone-200 px-4 py-3"
+                      className={`text-left text-xs font-medium text-stone-500 uppercase tracking-wider border-b border-stone-200 px-4 py-3 ${col.key === "thumbnail" ? "w-16" : ""}`}
                     >
                       {col.header}
                     </th>
@@ -397,6 +415,19 @@ export default function VenueManagementPage() {
                       key={venue.id}
                       className="hover:bg-stone-50 border-b border-stone-100 last:border-0"
                     >
+                      {/* <td className="px-4 py-3">
+                        {venue.thumbnail_url ? (
+                          <img
+                            src={venue.thumbnail_url}
+                            alt=""
+                            className="w-12 h-12 rounded-md object-cover"
+                          />
+                        ) : (
+                          <div className="w-12 h-12 rounded-md bg-stone-100 flex items-center justify-center">
+                            <ImageIcon className="text-gray-300" size={20} />
+                          </div>
+                        )}
+                      </td> */}
                       <td className="px-4 py-3 text-sm font-medium text-stone-900">
                         <button
                           onClick={() => navigate(`/venues/${venue.id}`)}
@@ -494,7 +525,7 @@ export default function VenueManagementPage() {
                     placeholder="Email"
                     className="w-full px-3 py-2 border border-gray-200 text-sm text-stone-900 rounded-md focus:ring-2 focus:ring-rose-500"
                   />
-                  <input
+                  {/* <input
                     type="tel"
                     value={addForm.phone}
                     onChange={(e) =>
@@ -502,7 +533,7 @@ export default function VenueManagementPage() {
                     }
                     placeholder="Phone"
                     className="w-full px-3 py-2 border border-gray-200 text-sm text-stone-900 rounded-md focus:ring-2 focus:ring-rose-500"
-                  />
+                  /> */}
                   <div className="flex gap-3">
                     <button
                       onClick={handleSaveAdd}
@@ -610,35 +641,48 @@ export default function VenueManagementPage() {
                 ) : (
                   <div
                     key={venue.id}
-                    className="bg-white border border-stone-100 rounded-lg p-4"
+                    className="bg-white border border-stone-100 rounded-lg overflow-hidden"
                   >
-                    <button
-                      onClick={() => navigate(`/venues/${venue.id}`)}
-                      className="text-sm font-medium text-rose-600 hover:text-rose-700 hover:underline"
-                    >
-                      {venue.name}
-                    </button>
-                    <p className="text-sm text-stone-500">{venue.address}</p>
-                    <p className="text-sm text-stone-500">
-                      Capacity: {venue.capacity}
-                    </p>
-                    <p className="text-sm text-stone-500">
-                      {venue.contact_name}
-                    </p>
-                    <div className="flex gap-2 mt-2">
-                      <span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-rose-100 text-rose-700">
-                        {venue.inquiry_count} inquiries
-                      </span>
-                      <span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-700">
-                        {venue.booking_count} bookings
-                      </span>
+                    {/* {venue.thumbnail_url ? (
+                      <img
+                        src={venue.thumbnail_url}
+                        alt=""
+                        className="w-full h-32 object-cover rounded-t-lg"
+                      />
+                    ) : (
+                      <div className="w-full h-32 bg-stone-100 flex items-center justify-center rounded-t-lg">
+                        <ImageIcon className="text-gray-300" size={32} />
+                      </div>
+                    )} */}
+                    <div className="p-4">
+                      <button
+                        onClick={() => navigate(`/venues/${venue.id}`)}
+                        className="text-sm font-medium text-rose-600 hover:text-rose-700 hover:underline"
+                      >
+                        {venue.name}
+                      </button>
+                      <p className="text-sm text-stone-500">{venue.address}</p>
+                      <p className="text-sm text-stone-500">
+                        Capacity: {venue.capacity}
+                      </p>
+                      <p className="text-sm text-stone-500">
+                        {venue.contact_name}
+                      </p>
+                      <div className="flex gap-2 mt-2">
+                        <span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-rose-100 text-rose-700">
+                          {venue.inquiry_count} inquiries
+                        </span>
+                        <span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-700">
+                          {venue.booking_count} bookings
+                        </span>
+                      </div>
+                      <button
+                        onClick={() => handleEdit(venue)}
+                        className="mt-2 text-sm font-medium text-rose-600 hover:text-rose-700"
+                      >
+                        Edit
+                      </button>
                     </div>
-                    <button
-                      onClick={() => handleEdit(venue)}
-                      className="mt-2 text-sm font-medium text-rose-600 hover:text-rose-700"
-                    >
-                      Edit
-                    </button>
                   </div>
                 ),
               )}

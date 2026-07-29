@@ -24,7 +24,7 @@ export class ImageService {
     const extension = file.name.split(".").pop() || "jpg"; // Default to jpg if no extension
     const imageName = `${referenceType}_${referenceId}_${Date.now()}.${extension}`;
     const imagePath = `${IMAGE_FOLDER}${imageName}`;
-
+    console.log(extension, imageName, imagePath);
     const arrayBuffer = await file.arrayBuffer();
 
     const imageResult = await this.r2Bucket.put(imagePath, arrayBuffer, {
@@ -32,6 +32,8 @@ export class ImageService {
         contentType: file.type,
       },
     });
+
+    console.log(imageResult);
 
     if (!imageResult) {
       throw new Error("Failed to store image in R2");
@@ -77,6 +79,14 @@ export class ImageService {
 
   async deleteImage(id: number): Promise<boolean> {
     return this.imageModel.deleteImage(id);
+  }
+
+  async reorderImages(
+    referenceType: (typeof CompanyServiceTypes)[keyof typeof CompanyServiceTypes],
+    referenceId: number,
+    items: { id: number; display_order: number }[],
+  ): Promise<boolean> {
+    return this.imageModel.reorderImages(referenceType, referenceId, items);
   }
 
   async getImageById(id: number): Promise<ImageResponseDTO | null> {

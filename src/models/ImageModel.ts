@@ -53,14 +53,49 @@ export class ImageModel {
   ): Promise<boolean> {
     const result = await this.db
       .prepare(
-        "INSERT INTO images (url, reference_type, reference_id, alternative_text, extension) VALUES (?, ?, ?, ?, ?) RETURNING *",
+        "INSERT INTO images (url, reference_type, reference_id, alternative_text, extension, position) VALUES (?, ?, ?, ?, ?, (SELECT COALESCE(MAX(position),0) + 1 FROM images WHERE reference_type = ? AND reference_id = ? AND deleted_at IS NULL)) RETURNING *",
       )
-      .bind(url, referenceType, referenceId, alternativeText, extension)
+      .bind(
+        url,
+        referenceType,
+        referenceId,
+        alternativeText,
+        extension,
+        referenceType,
+        referenceId,
+      )
       .first<ImageRow>();
     if (!result) {
       throw new Error("Failed to create image");
     }
     return true;
+  }
+
+  async updateImagePosition(id: number, newPosition: number): Promise<boolean> {
+    const result = await this.db
+      .prepare("UPDATE images SET position = ? WHERE id = ?")
+      .bind(newPosition, id)
+      .run();
+    return result.success;
+  }
+
+  async reorderImages(
+    referenceType: (typeof CompanyServiceTypes)[keyof typeof CompanyServiceTypes],
+    referenceId: number,
+    items: { id: number; display_order: number }[],
+  ): Promise<boolean> {
+    let batchList = [];
+    for (const item of items) {
+      batchList.push(
+        this.db
+          .prepare(
+            "UPDATE images SET position = ? WHERE id = ? AND reference_type = ? AND reference_id = ?",
+          )
+          .bind(item.display_order, item.id, referenceType, referenceId),
+      );
+    }
+    const result = await this.db.batch(batchList);
+    return result.every((r) => r.success);
   }
 
   async deleteImage(id: number): Promise<boolean> {
