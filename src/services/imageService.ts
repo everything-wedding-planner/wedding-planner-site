@@ -1,5 +1,10 @@
 import { ImageModel, IMAGE_FOLDER, ImageRow } from "../models/ImageModel";
-import type { D1Database, R2Bucket } from "@cloudflare/workers-types";
+import type {
+  D1Database,
+  R2Bucket,
+  R2Object,
+  R2ObjectBody,
+} from "@cloudflare/workers-types";
 import type { Env } from "../env";
 import { CompanyServiceTypes } from "../models/companyModel";
 import { ImageResponseDTO, toImageResponseDTO } from "../DTO/imageDTO";
@@ -32,8 +37,6 @@ export class ImageService {
         contentType: file.type,
       },
     });
-
-    console.log(imageResult);
 
     if (!imageResult) {
       throw new Error("Failed to store image in R2");
@@ -75,6 +78,20 @@ export class ImageService {
       }),
     );
     return imageResponseList;
+  }
+
+  async getImageFileById(id: number): Promise<R2ObjectBody | null> {
+    const imageRow = await this.imageModel.getImageById(id);
+    if (!imageRow) {
+      return null;
+    }
+
+    const object = await this.r2Bucket.get(imageRow.url);
+    if (!object) {
+      return null;
+    }
+
+    return object;
   }
 
   async deleteImage(id: number): Promise<boolean> {

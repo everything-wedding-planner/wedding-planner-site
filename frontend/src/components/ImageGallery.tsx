@@ -83,7 +83,7 @@ export default function ImageGallery({
 
     const reordered = arrayMove(images, oldIndex, newIndex).map((img, idx) => ({
       ...img,
-      display_order: idx,
+      position: idx,
     }));
 
     setImages(reordered);
@@ -96,7 +96,7 @@ export default function ImageGallery({
         refId,
         reordered.map((img) => ({
           id: img.id,
-          display_order: img.display_order,
+          display_order: img.position,
         })),
       );
     } catch {

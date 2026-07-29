@@ -22,7 +22,28 @@ imageRoute.get("", async (c) => {
     referenceType,
     Number(referenceId),
   );
+
   return c.json(images);
+});
+
+imageRoute.get("/:id/file", async (c) => {
+  const id = Number(c.req.param("id"));
+  if (!id) {
+    return c.json({ error: "Missing required parameters" }, 400);
+  }
+
+  const imageService = new ImageService(c.env.DB, c.env.R2_BUCKET);
+  const image = await imageService.getImageFileById(id);
+
+  if (!image) {
+    return c.json({ error: "Image not found" }, 404);
+  }
+
+  const headers = new Headers();
+  image.writeHttpMetadata(headers);
+  headers.set("Cache-Control", "public, max-age=31536000");
+
+  return c.newResponse(image.body, { headers });
 });
 
 imageRoute.delete("/:id", async (c) => {

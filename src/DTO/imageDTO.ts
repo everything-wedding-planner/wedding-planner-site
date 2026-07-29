@@ -37,7 +37,7 @@ export async function toImageResponseDTO(
 
   return {
     id: image.id,
-    url: image.url,
+    url: `/api/images/${image.id}/file`,
     reference_type: image.reference_type,
     reference_id: image.reference_id,
     reference: reference,

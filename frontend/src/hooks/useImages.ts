@@ -29,25 +29,25 @@ export function useImages(refType: string, refId: number | string) {
   }, [fetchImages]);
 
   const uploadImages = async (files: File[]) => {
-    const formData = new FormData();
-    files.forEach((f) => formData.append("file", f));
-    formData.append("referenceType", refType);
-    formData.append("referenceId", String(refId));
+    for (const file of files) {
+      const formData = new FormData();
+      formData.append("file", file);
+      formData.append("referenceType", refType);
+      formData.append("referenceId", String(refId));
 
-    const res = await fetch("/api/images", {
-      method: "POST",
-      credentials: "include",
-      body: formData,
-    });
+      const res = await fetch("/api/images", {
+        method: "POST",
+        credentials: "include",
+        body: formData,
+      });
 
-    if (!res.ok) {
-      if (res.status === 413) throw new Error("Image must be under 5 MB");
-      throw new Error("Upload failed. Please try again.");
+      if (!res.ok) {
+        if (res.status === 413) throw new Error("Image must be under 5 MB");
+        throw new Error("Upload failed. Please try again.");
+      }
     }
 
-    const data = await res.json();
-    setImages(data.images ?? []);
-    return data.images as ImageResponseDTO[];
+    await fetchImages();
   };
 
   const deleteImage = async (imageId: number) => {
@@ -55,7 +55,8 @@ export function useImages(refType: string, refId: number | string) {
       method: "DELETE",
       credentials: "include",
     });
-    if (!res.ok) throw new Error("Failed to remove image. Please try again.");
+    if (!res.ok)
+      throw new Error("Failed to remove image. Please try again.");
     setImages((prev) => prev.filter((i) => i.id !== imageId));
   };
 
@@ -64,14 +65,13 @@ export function useImages(refType: string, refId: number | string) {
     refId: number | string,
     items: { id: number; display_order: number }[],
   ) => {
-    console.log("Reordering images", refType, refId, items);
     const res = await fetch("/api/images/reorder", {
       method: "PUT",
       headers: { "Content-Type": "application/json" },
       credentials: "include",
       body: JSON.stringify({
         referenceType: refType,
-        referenceId: refId,
+        referenceId: Number(refId),
         items,
       }),
     });

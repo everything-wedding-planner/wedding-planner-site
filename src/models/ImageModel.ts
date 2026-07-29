@@ -29,7 +29,7 @@ export class ImageModel {
   ): Promise<ImageRow[]> {
     const result = await this.db
       .prepare(
-        "SELECT * FROM images WHERE reference_type = ? AND reference_id = ? AND deleted_at IS NULL",
+        "SELECT * FROM images WHERE reference_type = ? AND reference_id = ? AND deleted_at IS NULL ORDER BY position ASC",
       )
       .bind(referenceType, referenceId)
       .all<ImageRow>();
