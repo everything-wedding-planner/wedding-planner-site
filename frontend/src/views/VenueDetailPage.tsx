@@ -12,6 +12,7 @@ import { useImages } from "../hooks/useImages";
 import type { InquiryResponseDTO } from "../../../src/DTO/inquiryDTO";
 import type { BookingResponseDTO } from "../../../src/DTO/bookingDTO";
 import type { VenueResponseDTO as Venue } from "../../../src/DTO/venueDTO";
+import { CompanyServiceTypes } from "../../../src/models/companyModel";
 
 export default function VenueDetailPage() {
   const { id } = useParams<{ id: string }>();
@@ -33,7 +34,7 @@ export default function VenueDetailPage() {
     uploadImages,
     deleteImage,
     reorderImages,
-  } = useImages("venue", id!);
+  } = useImages(CompanyServiceTypes.venue, id!);
 
   const [inquiryStatusFilter, setInquiryStatusFilter] = useState("all");
   const [bookingStatusFilter, setBookingStatusFilter] = useState("all");
