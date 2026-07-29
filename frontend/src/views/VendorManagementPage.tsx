@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
-import { Plus, Loader2 } from "lucide-react";
+import { Plus, Loader2, ImageIcon } from "lucide-react";
 import Card from "../components/Card";
 
 interface VendorWithMetrics {
@@ -15,6 +15,7 @@ interface VendorWithMetrics {
   booking_count: number;
   created_at: Date;
   updated_at: Date;
+  thumbnail_url?: string;
 }
 
 interface VendorFormData {
@@ -289,6 +290,9 @@ export default function VendorManagementPage() {
             <table className="hidden sm:table w-full">
               <thead>
                 <tr>
+                  {/* <th className="text-left text-xs font-medium text-stone-500 uppercase tracking-wider border-b border-stone-200 px-4 py-3 w-16">
+                    Photo
+                  </th> */}
                   <th className="text-left text-xs font-medium text-stone-500 uppercase tracking-wider border-b border-stone-200 px-4 py-3">
                     Name
                   </th>
@@ -336,6 +340,19 @@ export default function VendorManagementPage() {
                       key={vendor.id}
                       className="hover:bg-stone-50 border-b border-stone-100 last:border-0"
                     >
+                      {/* <td className="px-4 py-3">
+                        {vendor.thumbnail_url ? (
+                          <img
+                            src={vendor.thumbnail_url}
+                            alt=""
+                            className="w-12 h-12 rounded-md object-cover"
+                          />
+                        ) : (
+                          <div className="w-12 h-12 rounded-md bg-stone-100 flex items-center justify-center">
+                            <ImageIcon className="text-gray-300" size={20} />
+                          </div>
+                        )}
+                      </td> */}
                       <td className="px-4 py-3 text-sm font-medium text-stone-900">
                         <button
                           onClick={() => navigate(`/vendors/${vendor.id}`)}
@@ -530,36 +547,49 @@ export default function VendorManagementPage() {
                 ) : (
                   <div
                     key={vendor.id}
-                    className="bg-white border border-stone-100 rounded-lg p-4"
+                    className="bg-white border border-stone-100 rounded-lg overflow-hidden"
                   >
-                    <button
-                      onClick={() => navigate(`/vendors/${vendor.id}`)}
-                      className="text-sm font-medium text-rose-600 hover:text-rose-700 hover:underline"
-                    >
-                      {vendor.name}
-                    </button>
-                    <p className="text-sm text-stone-500">
-                      {vendor.service_type}
-                    </p>
-                    <p className="text-sm text-stone-500">
-                      {vendor.contact_name}
-                    </p>
-                    <p className="text-sm text-stone-500">{vendor.email}</p>
-                    <p className="text-sm text-stone-500">{vendor.phone}</p>
-                    <div className="flex gap-2 mt-2">
-                      <span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-rose-100 text-rose-700">
-                        {vendor.inquiry_count} inquiries
-                      </span>
-                      <span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-700">
-                        {vendor.booking_count} bookings
-                      </span>
+                    {/* {vendor.thumbnail_url ? (
+                      <img
+                        src={vendor.thumbnail_url}
+                        alt=""
+                        className="w-full h-32 object-cover rounded-t-lg"
+                      />
+                    ) : (
+                      <div className="w-full h-32 bg-stone-100 flex items-center justify-center rounded-t-lg">
+                        <ImageIcon className="text-gray-300" size={32} />
+                      </div>
+                    )} */}
+                    <div className="p-4">
+                      <button
+                        onClick={() => navigate(`/vendors/${vendor.id}`)}
+                        className="text-sm font-medium text-rose-600 hover:text-rose-700 hover:underline"
+                      >
+                        {vendor.name}
+                      </button>
+                      <p className="text-sm text-stone-500">
+                        {vendor.service_type}
+                      </p>
+                      <p className="text-sm text-stone-500">
+                        {vendor.contact_name}
+                      </p>
+                      <p className="text-sm text-stone-500">{vendor.email}</p>
+                      <p className="text-sm text-stone-500">{vendor.phone}</p>
+                      <div className="flex gap-2 mt-2">
+                        <span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-rose-100 text-rose-700">
+                          {vendor.inquiry_count} inquiries
+                        </span>
+                        <span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-700">
+                          {vendor.booking_count} bookings
+                        </span>
+                      </div>
+                      <button
+                        onClick={() => handleEdit(vendor)}
+                        className="mt-2 text-sm font-medium text-rose-600 hover:text-rose-700"
+                      >
+                        Edit
+                      </button>
                     </div>
-                    <button
-                      onClick={() => handleEdit(vendor)}
-                      className="mt-2 text-sm font-medium text-rose-600 hover:text-rose-700"
-                    >
-                      Edit
-                    </button>
                   </div>
                 ),
               )}

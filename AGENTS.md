@@ -48,7 +48,6 @@ Monorepo with two packages: **root** = Cloudflare Worker (Hono.js backend), **`f
 
 - Backend tests use `@cloudflare/vitest-pool-workers` (simulates Workers runtime)
 - Frontend tests require Playwright browsers installed (`npx playwright install chromium`)
-- `src/index.test.ts` tests a `/api/v1/books` endpoint that **does not exist** in the app — stale/placeholder
 - Frontend tsconfig uses `noUnusedLocals` / `noUnusedParameters: true` — unused imports/params will fail `tsc --noEmit`
 
 ## Framework & deployment specifics
@@ -59,8 +58,3 @@ Monorepo with two packages: **root** = Cloudflare Worker (Hono.js backend), **`f
 - `@cloudflare/vitest-pool-workers` appears in both `dependencies` (v0.8.0) and `devDependencies` (v0.18.0) — resolve conflicts by keeping the devDeps version
 - `frontend/package.json` pins `@types/react` + `@types/react-dom` via `overrides` — don't remove
 - Hono JSX is configured (root tsconfig has `"jsx": "react-jsx"` with `"jsxImportSource": "hono/jsx"`) — for Worker-rendered HTML if needed
-
-## Dead code / cleanup notes
-
-- `landingController` is defined but never imported in `src/index.ts` — it's unused
-- `src/index.test.ts` is a placeholder referencing a `/api/v1/books` route that doesn't exist

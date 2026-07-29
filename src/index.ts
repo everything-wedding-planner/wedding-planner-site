@@ -9,6 +9,7 @@ import { onboardingRoute } from "./controllers/onboardingController";
 import { dashboardRoute } from "./controllers/dashboardController";
 import { bookingRoute } from "./controllers/bookingController";
 import { inquiryRoute } from "./controllers/inquiryController";
+import { imageRoute } from "./controllers/imageController";
 import type { AppBindings } from "./env";
 
 import { validUserMiddleware, customSessionMiddleware } from "./Middleware";
@@ -27,6 +28,7 @@ app.route("/api/onboarding", onboardingRoute);
 app.route("/api/dashboard", dashboardRoute);
 app.route("/api/bookings", bookingRoute);
 app.route("/api/inquiries", inquiryRoute);
+app.route("/api/images", imageRoute);
 
 app.get("/api/me", async (c) => {
   const session = c.get("session");

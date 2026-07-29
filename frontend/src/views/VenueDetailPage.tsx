@@ -7,9 +7,12 @@ import StatsCard from "../components/StatsCard";
 import Badge from "../components/Badge";
 import StatusSelect from "../components/StatusSelect";
 import BookingCalendar from "../components/BookingCalendar";
+import ImageGallery from "../components/ImageGallery";
+import { useImages } from "../hooks/useImages";
 import type { InquiryResponseDTO } from "../../../src/DTO/inquiryDTO";
 import type { BookingResponseDTO } from "../../../src/DTO/bookingDTO";
 import type { VenueResponseDTO as Venue } from "../../../src/DTO/venueDTO";
+import { CompanyServiceTypes } from "../../../src/models/companyModel";
 
 export default function VenueDetailPage() {
   const { id } = useParams<{ id: string }>();
@@ -21,8 +24,29 @@ export default function VenueDetailPage() {
   const [expandedInquiry, setExpandedInquiry] = useState<number | null>(null);
   const [expandedBooking, setExpandedBooking] = useState<number | null>(null);
 
+  const [isUploading, setIsUploading] = useState(false);
+
+  const {
+    images,
+    setImages,
+    isLoading: imagesLoading,
+    error: imagesError,
+    uploadImages,
+    deleteImage,
+    reorderImages,
+  } = useImages(CompanyServiceTypes.venue, id!);
+
   const [inquiryStatusFilter, setInquiryStatusFilter] = useState("all");
   const [bookingStatusFilter, setBookingStatusFilter] = useState("all");
+
+  const handleUpload = async (files: File[]) => {
+    setIsUploading(true);
+    try {
+      await uploadImages(files);
+    } finally {
+      setIsUploading(false);
+    }
+  };
 
   const fetchData = useCallback(async () => {
     setIsLoading(true);
@@ -177,6 +201,18 @@ export default function VenueDetailPage() {
           {venue.address && <span>{venue.address}</span>}
         </div>
       </Card>
+
+      {/* Image gallery */}
+      <ImageGallery
+        images={images}
+        setImages={setImages}
+        isLoading={imagesLoading}
+        isUploading={isUploading}
+        error={imagesError}
+        onUpload={handleUpload}
+        onDelete={deleteImage}
+        onReorder={reorderImages}
+      />
 
       {/* Stats row */}
       <div className="grid grid-cols-2 gap-4">

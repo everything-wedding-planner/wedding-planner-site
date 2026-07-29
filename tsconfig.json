@@ -5,12 +5,13 @@
     "moduleResolution": "Bundler",
     "strict": true,
     "skipLibCheck": true,
-    "lib": ["ESNext"],
+    "lib": ["ESNext", "DOM"],
 
     "jsx": "react-jsx",
     "jsxImportSource": "hono/jsx",
     "noEmit": true
   },
+  "types": ["@cloudflare/workers-types", "hono/client"],
   "include": ["src/**/*.ts", "src/**/*.tsx", "src/**/*.d.ts"],
   "exclude": ["node_modules"]
 }
