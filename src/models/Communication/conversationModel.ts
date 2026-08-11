@@ -64,8 +64,8 @@ export class ConversationModel {
         inquiry_id,
         reference_id,
         reference_type,
-        new Date(),
-        new Date(),
+        new Date().toISOString(),
+        new Date().toISOString(),
       )
       .run();
     return result.success;
@@ -79,7 +79,7 @@ export class ConversationModel {
       .prepare(
         "UPDATE conversations SET status = ?, updated_at = ? WHERE id = ?",
       )
-      .bind(newStatus, new Date(), conversationId)
+      .bind(newStatus, new Date().toISOString(), conversationId)
       .run();
     return result.success;
   }

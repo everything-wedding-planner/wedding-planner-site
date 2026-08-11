@@ -29,6 +29,25 @@ export class MessageService {
     return messageDTO;
   }
 
+  async getMessagesByConversationIdSince(
+    conversation_id: number,
+    since: string,
+  ): Promise<messageResponseDTO[]> {
+    const messages =
+      await this.messageModel.getMessagesByConversationIdSince(
+        conversation_id,
+        since,
+      );
+
+    return messages.map((message: messageRow) =>
+      toMessageResponseDTO(message),
+    );
+  }
+
+  async getMessageById(message_id: number): Promise<messageRow | null> {
+    return this.messageModel.getMessageById(message_id);
+  }
+
   async createMessage(
     conversation_id: number,
     message_role: string,

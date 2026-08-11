@@ -29,6 +29,27 @@ export class MessageModel {
     return results.results;
   }
 
+  async getMessagesByConversationIdSince(
+    conversation_id: number,
+    since: string,
+  ): Promise<messageRow[]> {
+    const results = await this.db
+      .prepare(
+        "SELECT * FROM messages WHERE conversation_id = ? AND created_at > ? ORDER BY created_at ASC",
+      )
+      .bind(conversation_id, since)
+      .all<messageRow>();
+    return results.results;
+  }
+
+  async getMessageById(id: number): Promise<messageRow | null> {
+    const result = await this.db
+      .prepare("SELECT * FROM messages WHERE id = ?")
+      .bind(id)
+      .first<messageRow>();
+    return result || null;
+  }
+
   async createMessage(
     conversation_id: number,
     message_role: string,
@@ -38,7 +59,13 @@ export class MessageModel {
       .prepare(
         "INSERT INTO messages (conversation_id, message_role, content, created_at, updated_at) VALUES (?, ?, ?, ?, ?)",
       )
-      .bind(conversation_id, message_role, content, new Date(), new Date())
+      .bind(
+        conversation_id,
+        message_role,
+        content,
+        new Date().toISOString(),
+        new Date().toISOString(),
+      )
       .run();
     return result.success;
   }
@@ -46,7 +73,7 @@ export class MessageModel {
   async markMessageAsRead(message_id: number): Promise<Boolean> {
     const result = await this.db
       .prepare("UPDATE messages SET read_at = ? WHERE id = ?")
-      .bind(new Date(), message_id)
+      .bind(new Date().toISOString(), message_id)
       .run();
     return result.success;
   }

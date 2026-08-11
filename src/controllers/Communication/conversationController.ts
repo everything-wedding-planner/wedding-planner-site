@@ -1,10 +1,13 @@
 import { Hono } from "hono";
 import { AppBindings } from "../../env";
 import { ConversationService } from "../../services/Communication/conversationService";
+import { MessageService } from "../../services/Communication/messageService";
 
 export const conversationRoute = new Hono<AppBindings>();
 
 conversationRoute.get("/:id", async (c) => {
+  const session = c.get("session");
+  const userId = session.get("userId");
   const id = Number(c.req.param("id"));
 
   if (!id) {
@@ -14,16 +17,32 @@ conversationRoute.get("/:id", async (c) => {
   const db = c.env.DB;
 
   const conversationService = new ConversationService(db);
+  const conversation = await conversationService.getConversationRow(id);
+
+  if (!conversation) {
+    return c.json({ error: "Conversation not found" }, 404);
+  }
+
+  const canAccess = await conversationService.userCanAccessConversation(
+    userId,
+    conversation,
+  );
+  if (!canAccess) {
+    return c.json({ error: "Conversation not found" }, 404);
+  }
+
   const conversationDTO = await conversationService.getConversationById(id);
 
-  if (conversationDTO instanceof Error) {
-    return c.json({ error: conversationDTO.message }, 404);
+  if (!conversationDTO) {
+    return c.json({ error: "Conversation not found" }, 404);
   }
 
   return c.json(conversationDTO);
 });
 
 conversationRoute.get("/reference/:reference_type/:reference_id", async (c) => {
+  const session = c.get("session");
+  const userId = session.get("userId");
   const reference_type = c.req.param("reference_type");
   const reference_id = Number(c.req.param("reference_id"));
 
@@ -33,6 +52,16 @@ conversationRoute.get("/reference/:reference_type/:reference_id", async (c) => {
 
   const db = c.env.DB;
   const conversationService = new ConversationService(db);
+
+  const canAccess = await conversationService.userCanAccessReference(
+    userId,
+    reference_id,
+    reference_type,
+  );
+  if (!canAccess) {
+    return c.json({ error: "Not found" }, 404);
+  }
+
   const conversationDTOs =
     await conversationService.getConversationsByReference(
       reference_id,
@@ -42,17 +71,66 @@ conversationRoute.get("/reference/:reference_type/:reference_id", async (c) => {
   return c.json(conversationDTOs);
 });
 
-conversationRoute.post("/", async (c) => {
-  const { client_id, reference_id, reference_type } = await c.req.json();
+conversationRoute.get("/:id/messages", async (c) => {
+  const session = c.get("session");
+  const userId = session.get("userId");
+  const id = Number(c.req.param("id"));
+  const since = c.req.query("since");
 
-  if (!client_id || !reference_id || !reference_type) {
+  if (!id) {
     return c.json({ error: "Missing required parameters" }, 400);
   }
 
   const db = c.env.DB;
   const conversationService = new ConversationService(db);
+  const conversation = await conversationService.getConversationRow(id);
+
+  if (!conversation) {
+    return c.json({ error: "Conversation not found" }, 404);
+  }
+
+  const canAccess = await conversationService.userCanAccessConversation(
+    userId,
+    conversation,
+  );
+  if (!canAccess) {
+    return c.json({ error: "Conversation not found" }, 404);
+  }
+
+  const messageService = new MessageService(db);
+  const messages = since
+    ? await messageService.getMessagesByConversationIdSince(id, since)
+    : await messageService.getMessagesByConversationId(id);
+
+  return c.json({ messages });
+});
+
+conversationRoute.post("/", async (c) => {
+  const session = c.get("session");
+  const userId = session.get("userId");
+  const { client_id, inquiry_id, reference_id, reference_type } =
+    await c.req.json();
+
+  if (!client_id || !inquiry_id || !reference_id || !reference_type) {
+    return c.json({ error: "Missing required parameters" }, 400);
+  }
+
+  const db = c.env.DB;
+  const conversationService = new ConversationService(db);
+
+  const isClient = client_id === userId;
+  const isCompanyOwner = await conversationService.userCanAccessReference(
+    userId,
+    reference_id,
+    reference_type,
+  );
+  if (!isClient && !isCompanyOwner) {
+    return c.json({ error: "Forbidden" }, 403);
+  }
+
   const success = await conversationService.createConversation(
     client_id,
+    inquiry_id,
     reference_id,
     reference_type,
   );
@@ -60,6 +138,8 @@ conversationRoute.post("/", async (c) => {
 });
 
 conversationRoute.put("/:id/status", async (c) => {
+  const session = c.get("session");
+  const userId = session.get("userId");
   const id = Number(c.req.param("id"));
   const { newStatus } = await c.req.json();
 
@@ -69,6 +149,20 @@ conversationRoute.put("/:id/status", async (c) => {
 
   const db = c.env.DB;
   const conversationService = new ConversationService(db);
+  const conversation = await conversationService.getConversationRow(id);
+
+  if (!conversation) {
+    return c.json({ error: "Conversation not found" }, 404);
+  }
+
+  const canAccess = await conversationService.userCanAccessConversation(
+    userId,
+    conversation,
+  );
+  if (!canAccess) {
+    return c.json({ error: "Forbidden" }, 403);
+  }
+
   const success = await conversationService.updateConversationStatus(
     id,
     newStatus,
