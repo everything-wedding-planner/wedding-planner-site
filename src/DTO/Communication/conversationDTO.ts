@@ -14,6 +14,7 @@ import { VendorModel } from "../../models/vendorModel";
 export interface conversationResponseDTO {
   id: number;
   client: UserResponseDTO | null;
+  inquiry: number;
   reference_object: VendorResponseDTO | VenueResponseDTO | null;
   messages: messageResponseDTO[];
   status: string;
@@ -63,6 +64,7 @@ export async function toConversationResponseDTO(
   return {
     id: conversation.id,
     client: user,
+    inquiry: conversation.inquiry_id,
     reference_object: reference_object,
     messages: messages ?? [],
     status: conversation.status,

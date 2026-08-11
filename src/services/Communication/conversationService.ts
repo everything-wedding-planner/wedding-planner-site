@@ -63,11 +63,13 @@ export class ConversationService {
 
   async createConversation(
     client_id: number,
+    inquiry_id: number,
     reference_id: number,
     reference_type: string,
   ): Promise<Boolean> {
     return this.conversationModel.createConversation(
       client_id,
+      inquiry_id,
       reference_id,
       reference_type,
     );

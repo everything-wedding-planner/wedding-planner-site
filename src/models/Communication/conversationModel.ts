@@ -2,6 +2,7 @@ import { D1Database } from "@cloudflare/workers-types";
 
 export interface conversationRow {
   id: number;
+  inquiry_id: number;
   client_id: number;
   reference_id: number;
   reference_type: string;
@@ -50,14 +51,22 @@ export class ConversationModel {
 
   async createConversation(
     client_id: number,
+    inquiry_id: number,
     reference_id: number,
     reference_type: string,
   ): Promise<Boolean> {
     const result = await this.db
       .prepare(
-        "INSERT INTO conversations (client_id, reference_id, reference_type, created_at, updated_at) VALUES (?, ?, ?, ?, ?)",
+        "INSERT INTO conversations (client_id, inquiry_id, reference_id, reference_type, created_at, updated_at) VALUES (?, ?, ?, ?, ?, ?)",
       )
-      .bind(client_id, reference_id, reference_type, new Date(), new Date())
+      .bind(
+        client_id,
+        inquiry_id,
+        reference_id,
+        reference_type,
+        new Date(),
+        new Date(),
+      )
       .run();
     return result.success;
   }
