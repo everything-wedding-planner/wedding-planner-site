@@ -10,12 +10,12 @@ A threaded messaging system scoped to each inquiry, enabling vendors/venues (via
 
 ## Key Changes
 
-### Database — New Migration (`0005`) *— owned by you*
+### Database — New Migration (`0006`) _— owned by you_
 
 - `messages` table (as specified in REQUIREMENTS.md)
   - Adding explicit `sender_role` column (`CLIENT` | `VENDOR`)
 
-### Backend — API Endpoints *— owned by you*
+### Backend — API Endpoints _— owned by you_
 
 - Zod validation on message inputs
 - `GET /api/inquiries/:id/messages` — list messages (ascending, paginated)
@@ -23,7 +23,7 @@ A threaded messaging system scoped to each inquiry, enabling vendors/venues (via
 - `POST /api/inquiries/:id/messages` — send a message (body: `{ content }`)
 - Auth enforcement: only participants of the inquiry can read/send
 
-### Frontend — New Components & API Hook *(my scope)*
+### Frontend — New Components & API Hook _(my scope)_
 
 - **New library/facility**: Custom `useApi` hook — typed fetch wrapper with `credentials: "include"`, JSON parsing, error handling, and generics
 - **New component**: `MessageThread` — chat-like scrollable list inside the existing expandable inquiry section

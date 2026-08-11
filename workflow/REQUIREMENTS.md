@@ -11,6 +11,7 @@ A threaded messaging system tied to each inquiry, where both vendors/venues (via
 ## Scope
 
 ### In scope
+
 - New `messages` DB table with FK to `inquiries`
 - Backend API: send message, list messages (with pagination), poll for new messages (`?since=<timestamp>`)
 - Admin dashboard UI: message thread panel inside inquiry detail view (chronological list + compose box)
@@ -19,6 +20,7 @@ A threaded messaging system tied to each inquiry, where both vendors/venues (via
 - Messages tagged with sender role (vendor user vs client user)
 
 ### Out of scope
+
 - Client-facing mobile app (separate future effort — the API will support it)
 - WebSocket or SSE real-time connections
 - Push notifications
@@ -28,25 +30,42 @@ A threaded messaging system tied to each inquiry, where both vendors/venues (via
 ## Architecture
 
 ### Database
-New `messages` table:
+
+New `conversations` table:
+
 - `id` INTEGER PRIMARY KEY AUTOINCREMENT
-- `inquiry_id` INTEGER NOT NULL (FK → inquiries.id, CASCADE DELETE)
-- `sender_id` INTEGER NOT NULL (FK → users.id)
+- `client_id` INTEGER
+- `reference_id` INTEGER
+- `reference_type` STRING
+- `status` STRING
+- `created_at` DATE
+- `updated_at` DATE
+
+New `messages` table:
+
+- `id` INTEGER PRIMARY KEY AUTOINCREMENT
+- `conversation_id` INTEGER
+- `message_role` TEXT
 - `content` TEXT NOT NULL
+- `read_at` BOOLEAN
 - `created_at` TEXT DEFAULT localtime timestamp
+- `updated_at` DATE
 
 ### Backend API
+
 - `GET /api/inquiries/:id/messages` — list all messages for an inquiry (ascending by created_at)
 - `POST /api/inquiries/:id/messages` — send a new message (body: `{ content }`)
 - `GET /api/inquiries/:id/messages?since=<ISO-timestamp>` — poll for messages after a given timestamp
 
 ### Admin Dashboard (Frontend)
+
 - New `MessageThread` component shown within inquiry detail
 - Messages displayed in a chat-like scrollable list, oldest to newest
 - Simple text input + send button for replies
 - `useEffect` with `setInterval` polling every 5-10s using `?since=` of the latest message timestamp
 
 ### Client API (future mobile app)
+
 - Same API endpoints, authenticated via the same session mechanism
 - Client sees only their own inquiry threads
 
