@@ -310,7 +310,7 @@ export async function seedMessage(
   db: D1Database,
   overrides: Partial<{
     conversation_id: number;
-    message_role: string;
+    sender_id: number;
     content: string;
     read_at: string | null;
     created_at: string;
@@ -318,7 +318,7 @@ export async function seedMessage(
 ) {
   const defaults = {
     conversation_id: 1,
-    message_role: "vendor",
+    sender_id: 1,
     content: `Message ${Date.now()}`,
     read_at: null,
     created_at: new Date().toISOString(),
@@ -326,11 +326,11 @@ export async function seedMessage(
   };
   const result = await db
     .prepare(
-      "INSERT INTO messages (conversation_id, message_role, content, read_at, created_at, updated_at) VALUES (?, ?, ?, ?, ?, ?)",
+      "INSERT INTO messages (conversation_id, sender_id, content, read_at, created_at, updated_at) VALUES (?, ?, ?, ?, ?, ?)",
     )
     .bind(
       defaults.conversation_id,
-      defaults.message_role,
+      defaults.sender_id,
       defaults.content,
       defaults.read_at,
       defaults.created_at,

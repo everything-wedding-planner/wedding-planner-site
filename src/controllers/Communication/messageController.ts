@@ -8,16 +8,15 @@ export const messageRoute = new Hono<AppBindings>();
 messageRoute.post("/", async (c) => {
   const session = c.get("session");
   const userId = session.get("userId");
-  const { conversation_id, message_role, content } = await c.req.json();
-  if (!conversation_id || !message_role || !content) {
+  const { conversation_id, sender_id, content } = await c.req.json();
+  if (!conversation_id || !sender_id || !content) {
     return c.json({ error: "Missing required parameters" }, 400);
   }
 
   const db = c.env.DB;
   const conversationService = new ConversationService(db);
-  const conversation = await conversationService.getConversationRow(
-    conversation_id,
-  );
+  const conversation =
+    await conversationService.getConversationRow(conversation_id);
 
   if (!conversation) {
     return c.json({ error: "Conversation not found" }, 404);
@@ -34,7 +33,7 @@ messageRoute.post("/", async (c) => {
   const messageService = new MessageService(db);
   const success = await messageService.createMessage(
     conversation_id,
-    message_role,
+    sender_id,
     content,
   );
   return c.json({ success });

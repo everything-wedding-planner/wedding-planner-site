@@ -5,6 +5,7 @@ import {
   DollarSign,
   Clock,
   Sparkles,
+  MessageSquare,
 } from "lucide-react";
 import Sidebar, { MobileSidebar } from "./Sidebar";
 import type { NavItem } from "./Sidebar";
@@ -42,6 +43,12 @@ function DashboardContent() {
       label: "Venues",
       icon: Clock,
       shouldShow: venues !== null && venues.length > 0,
+    },
+    {
+      to: "/messages",
+      label: "Messages",
+      icon: MessageSquare,
+      shouldShow: true,
     },
     {
       to: "/onboarding",

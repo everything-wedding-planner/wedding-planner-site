@@ -3,12 +3,14 @@ import { D1Database } from "@cloudflare/workers-types";
 export interface messageRow {
   id: number;
   conversation_id: number;
-  message_role: string;
+  sender_id: number;
   content: string;
   read_at: Date | null;
   created_at: Date;
   updated_at: Date;
 }
+
+// export type MessageRoles = "client" | "vendor" | "venue";
 
 export class MessageModel {
   private db: D1Database;
@@ -52,16 +54,16 @@ export class MessageModel {
 
   async createMessage(
     conversation_id: number,
-    message_role: string,
+    sender_id: number,
     content: string,
   ): Promise<Boolean> {
     const result = await this.db
       .prepare(
-        "INSERT INTO messages (conversation_id, message_role, content, created_at, updated_at) VALUES (?, ?, ?, ?, ?)",
+        "INSERT INTO messages (conversation_id, sender_id, content, created_at, updated_at) VALUES (?, ?, ?, ?, ?)",
       )
       .bind(
         conversation_id,
-        message_role,
+        sender_id,
         content,
         new Date().toISOString(),
         new Date().toISOString(),

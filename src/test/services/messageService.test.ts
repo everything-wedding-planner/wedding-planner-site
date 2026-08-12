@@ -33,13 +33,13 @@ describe("MessageService", () => {
     const { conversation } = await setupConversation();
     await seedMessage(env.DB, {
       conversation_id: conversation.id,
-      message_role: "client",
+      sender_id: 1,
       content: "old",
       created_at: "2026-01-01T00:00:00.000Z",
     });
     await seedMessage(env.DB, {
       conversation_id: conversation.id,
-      message_role: "client",
+      sender_id: 1,
       content: "new",
       created_at: "2026-02-01T00:00:00.000Z",
     });
@@ -53,11 +53,11 @@ describe("MessageService", () => {
     expect(messages[0].content).toBe("new");
   });
 
-  it("getMessagesByConversationIdSince — DTOs carry conversation id and role", async () => {
+  it("getMessagesByConversationIdSince — DTOs carry conversation id and sender_id", async () => {
     const { conversation } = await setupConversation();
     await seedMessage(env.DB, {
       conversation_id: conversation.id,
-      message_role: "venue",
+      sender_id: 2,
       content: "hello",
       created_at: "2026-01-01T00:00:00.000Z",
     });
@@ -69,7 +69,7 @@ describe("MessageService", () => {
     );
     expect(messages).toHaveLength(1);
     expect(messages[0].conversation_id).toBe(conversation.id);
-    expect(messages[0].message_role).toBe("venue");
+    expect(messages[0].sender_id).toBe(2);
     expect(messages[0].content).toBe("hello");
   });
 });

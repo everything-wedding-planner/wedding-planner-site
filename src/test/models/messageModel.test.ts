@@ -33,13 +33,13 @@ describe("MessageModel", () => {
     const { conversation } = await setupConversation();
     await seedMessage(env.DB, {
       conversation_id: conversation.id,
-      message_role: "client",
+      sender_id: 1,
       content: "first",
       created_at: "2026-01-01T00:00:00.000Z",
     });
     await seedMessage(env.DB, {
       conversation_id: conversation.id,
-      message_role: "client",
+      sender_id: 1,
       content: "second",
       created_at: "2026-02-01T00:00:00.000Z",
     });
@@ -57,13 +57,13 @@ describe("MessageModel", () => {
     const { conversation } = await setupConversation();
     await seedMessage(env.DB, {
       conversation_id: conversation.id,
-      message_role: "client",
+      sender_id: 1,
       content: "older",
       created_at: "2026-03-01T00:00:00.000Z",
     });
     await seedMessage(env.DB, {
       conversation_id: conversation.id,
-      message_role: "client",
+      sender_id: 1,
       content: "newer",
       created_at: "2026-04-01T00:00:00.000Z",
     });
@@ -80,7 +80,7 @@ describe("MessageModel", () => {
     const { conversation } = await setupConversation();
     await seedMessage(env.DB, {
       conversation_id: conversation.id,
-      message_role: "client",
+      sender_id: 1,
       content: "only",
       created_at: "2026-05-01T00:00:00.000Z",
     });
@@ -97,7 +97,7 @@ describe("MessageModel", () => {
     const { conversation } = await setupConversation();
     const message = await seedMessage(env.DB, {
       conversation_id: conversation.id,
-      message_role: "client",
+      sender_id: 1,
       content: "hello",
     });
 

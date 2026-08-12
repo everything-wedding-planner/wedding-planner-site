@@ -11,6 +11,8 @@ import { VenueModel } from "../../models/venueModel";
 import { VendorResponseDTO, toVendorResponseDTO } from "../vendorDTO";
 import { VendorModel } from "../../models/vendorModel";
 
+import { CompanyServiceTypes } from "../../models/companyModel";
+
 export interface conversationResponseDTO {
   id: number;
   client: UserResponseDTO | null;
@@ -39,7 +41,7 @@ export async function toConversationResponseDTO(
   }
 
   let reference_object: VendorResponseDTO | VenueResponseDTO | null = null;
-  if (conversation.reference_type === "vendor") {
+  if (conversation.reference_type === CompanyServiceTypes.vendor) {
     const vendorModel = new VendorModel(db);
     reference_object = await vendorModel
       .getVendorById(conversation.reference_id)
@@ -49,7 +51,7 @@ export async function toConversationResponseDTO(
         }
         return null;
       });
-  } else if (conversation.reference_type === "venue") {
+  } else if (conversation.reference_type === CompanyServiceTypes.venue) {
     const venueModel = new VenueModel(db);
     reference_object = await venueModel
       .getVenueById(conversation.reference_id)

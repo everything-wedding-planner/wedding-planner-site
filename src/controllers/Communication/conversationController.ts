@@ -2,6 +2,7 @@ import { Hono } from "hono";
 import { AppBindings } from "../../env";
 import { ConversationService } from "../../services/Communication/conversationService";
 import { MessageService } from "../../services/Communication/messageService";
+import { CompanyServiceTypes } from "../../models/companyModel";
 
 export const conversationRoute = new Hono<AppBindings>();
 
@@ -50,13 +51,21 @@ conversationRoute.get("/reference/:reference_type/:reference_id", async (c) => {
     return c.json({ error: "Missing required parameters" }, 400);
   }
 
+  // Convert the reference_type into the corresponding CompanyServiceTypes value
+  if (reference_type !== "vendor" && reference_type !== "venue") {
+    return c.json({ error: "Invalid reference type" }, 400);
+  }
+
+  let reference_type_const =
+    reference_type as (typeof CompanyServiceTypes)[keyof typeof CompanyServiceTypes];
+
   const db = c.env.DB;
   const conversationService = new ConversationService(db);
 
   const canAccess = await conversationService.userCanAccessReference(
     userId,
     reference_id,
-    reference_type,
+    reference_type_const,
   );
   if (!canAccess) {
     return c.json({ error: "Not found" }, 404);
@@ -65,7 +74,7 @@ conversationRoute.get("/reference/:reference_type/:reference_id", async (c) => {
   const conversationDTOs =
     await conversationService.getConversationsByReference(
       reference_id,
-      reference_type,
+      reference_type_const,
     );
 
   return c.json(conversationDTOs);
@@ -93,6 +102,7 @@ conversationRoute.get("/:id/messages", async (c) => {
     userId,
     conversation,
   );
+
   if (!canAccess) {
     return c.json({ error: "Conversation not found" }, 404);
   }

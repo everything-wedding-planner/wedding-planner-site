@@ -9,6 +9,15 @@ import { playwright } from "@vitest/browser-playwright";
 // https://vite.dev/config/
 export default defineConfig({
   plugins: [react(), tailwindcss()],
+  optimizeDeps: {
+    include: [
+      "react",
+      "react-dom",
+      "react-router-dom",
+      "lucide-react",
+      "@testing-library/jest-dom/vitest",
+    ],
+  },
   build: {
     outDir: "dist",
     emptyOutDir: true,
@@ -29,7 +38,7 @@ export default defineConfig({
     },
   },
   test: {
-    setupFiles: ["./src/setupTests.ts"],
+    setupFiles: ["./setupTests.ts"],
     browser: {
       enabled: true,
       provider: playwright(),

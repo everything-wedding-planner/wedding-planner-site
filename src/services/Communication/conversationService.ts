@@ -10,7 +10,7 @@ import {
 } from "../../DTO/Communication/conversationDTO";
 
 import { MessageService } from "./messageService";
-import { CompanyModel } from "../../models/companyModel";
+import { CompanyModel, CompanyServiceTypes } from "../../models/companyModel";
 import { VendorModel } from "../../models/vendorModel";
 import { VenueModel } from "../../models/venueModel";
 
@@ -49,13 +49,13 @@ export class ConversationService {
       return false;
     }
 
-    if (conversation.reference_type === "vendor") {
+    if (conversation.reference_type === CompanyServiceTypes.vendor) {
       const vendor = await this.vendorModel.getVendorById(
         conversation.reference_id,
       );
       return vendor !== null && vendor.company_id === company.id;
     }
-    if (conversation.reference_type === "venue") {
+    if (conversation.reference_type === CompanyServiceTypes.venue) {
       const venue = await this.venueModel.getVenueById(
         conversation.reference_id,
       );
@@ -67,18 +67,18 @@ export class ConversationService {
   async userCanAccessReference(
     userId: number,
     reference_id: number,
-    reference_type: string,
+    reference_type: (typeof CompanyServiceTypes)[keyof typeof CompanyServiceTypes],
   ): Promise<boolean> {
     const company = await this.companyModel.getCompanyByUserId(userId);
     if (!company) {
       return false;
     }
 
-    if (reference_type === "vendor") {
+    if (reference_type.toUpperCase() === CompanyServiceTypes.vendor) {
       const vendor = await this.vendorModel.getVendorById(reference_id);
       return vendor !== null && vendor.company_id === company.id;
     }
-    if (reference_type === "venue") {
+    if (reference_type.toUpperCase() === CompanyServiceTypes.venue) {
       const venue = await this.venueModel.getVenueById(reference_id);
       return venue !== null && venue.company_id === company.id;
     }
@@ -102,7 +102,7 @@ export class ConversationService {
 
   async getConversationsByReference(
     reference_id: number,
-    reference_type: string,
+    reference_type: (typeof CompanyServiceTypes)[keyof typeof CompanyServiceTypes],
   ): Promise<conversationResponseDTO[]> {
     const conversations =
       await this.conversationModel.getConversationsByReference(
@@ -130,7 +130,7 @@ export class ConversationService {
     client_id: number,
     inquiry_id: number,
     reference_id: number,
-    reference_type: string,
+    reference_type: (typeof CompanyServiceTypes)[keyof typeof CompanyServiceTypes],
   ): Promise<Boolean> {
     return this.conversationModel.createConversation(
       client_id,

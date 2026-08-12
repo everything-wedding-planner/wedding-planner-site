@@ -33,31 +33,26 @@ export class MessageService {
     conversation_id: number,
     since: string,
   ): Promise<messageResponseDTO[]> {
-    const messages =
-      await this.messageModel.getMessagesByConversationIdSince(
-        conversation_id,
-        since,
-      );
-
-    return messages.map((message: messageRow) =>
-      toMessageResponseDTO(message),
+    const messages = await this.messageModel.getMessagesByConversationIdSince(
+      conversation_id,
+      since,
     );
+
+    return messages.map((message: messageRow) => toMessageResponseDTO(message));
   }
 
-  async getMessageById(message_id: number): Promise<messageRow | null> {
-    return this.messageModel.getMessageById(message_id);
+  async getMessageById(message_id: number): Promise<messageResponseDTO | null> {
+    const message: messageRow | null =
+      await this.messageModel.getMessageById(message_id);
+    return message ? toMessageResponseDTO(message) : null;
   }
 
   async createMessage(
     conversation_id: number,
-    message_role: string,
+    sender_id: number,
     content: string,
   ): Promise<Boolean> {
-    return this.messageModel.createMessage(
-      conversation_id,
-      message_role,
-      content,
-    );
+    return this.messageModel.createMessage(conversation_id, sender_id, content);
   }
 
   async markMessageAsRead(message_id: number): Promise<Boolean> {

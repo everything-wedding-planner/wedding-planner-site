@@ -29,13 +29,13 @@ describe("ConversationController", () => {
     });
     await seedMessage(env.DB, {
       conversation_id: conversation.id,
-      message_role: "client",
+      sender_id: 3, // testclient1
       content: "Hello from the client",
       created_at: "2026-01-01T00:00:00.000Z",
     });
     await seedMessage(env.DB, {
       conversation_id: conversation.id,
-      message_role: "vendor",
+      sender_id: 1, // testvendor1
       content: "Hello from the vendor",
       created_at: "2026-02-01T00:00:00.000Z",
     });

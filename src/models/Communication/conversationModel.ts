@@ -1,11 +1,12 @@
 import { D1Database } from "@cloudflare/workers-types";
+import { CompanyServiceTypes } from "../companyModel";
 
 export interface conversationRow {
   id: number;
   inquiry_id: number;
   client_id: number;
   reference_id: number;
-  reference_type: string;
+  reference_type: (typeof CompanyServiceTypes)[keyof typeof CompanyServiceTypes];
   status: string;
   created_at: Date;
   updated_at: Date;
@@ -34,7 +35,7 @@ export class ConversationModel {
       .prepare(
         "SELECT * FROM conversations WHERE reference_id = ? AND reference_type = ?",
       )
-      .bind(reference_id, reference_type)
+      .bind(reference_id, reference_type.toUpperCase())
       .all<conversationRow>();
     return result.results;
   }

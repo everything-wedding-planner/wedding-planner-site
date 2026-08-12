@@ -30,7 +30,7 @@ describe("MessageController", () => {
     });
     clientMessage = await seedMessage(env.DB, {
       conversation_id: conversation.id,
-      message_role: "client",
+      sender_id: 3, // testclient1
       content: "Hello from the client",
     });
   });
@@ -42,7 +42,7 @@ describe("MessageController", () => {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           conversation_id: conversation.id,
-          message_role: "vendor",
+          sender_id: 1,
           content: "hi",
         }),
       });
@@ -53,7 +53,7 @@ describe("MessageController", () => {
       const { cookie } = await loginUser("testvendor1@example.com");
       const res = await authPost("/api/messages", cookie, {
         conversation_id: conversation.id,
-        message_role: "vendor",
+        sender_id: 1,
         content: "Hello from the vendor",
       });
       expect(res.status).toBe(200);
@@ -65,7 +65,7 @@ describe("MessageController", () => {
       const { cookie } = await loginUser("testclient1@example.com");
       const res = await authPost("/api/messages", cookie, {
         conversation_id: conversation.id,
-        message_role: "client",
+        sender_id: 3,
         content: "Hello back",
       });
       expect(res.status).toBe(200);
@@ -75,7 +75,7 @@ describe("MessageController", () => {
       const { cookie } = await loginUser("testvenue1@example.com");
       const res = await authPost("/api/messages", cookie, {
         conversation_id: conversation.id,
-        message_role: "venue",
+        sender_id: 2,
         content: "sneaky",
       });
       expect(res.status).toBe(403);
@@ -85,7 +85,7 @@ describe("MessageController", () => {
       const { cookie } = await loginUser("testvendor1@example.com");
       const res = await authPost("/api/messages", cookie, {
         conversation_id: 999999,
-        message_role: "vendor",
+        sender_id: 1,
         content: "hi",
       });
       expect(res.status).toBe(404);
