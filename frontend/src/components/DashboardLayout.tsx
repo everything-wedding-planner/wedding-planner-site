@@ -13,6 +13,8 @@ import {
   DashboardDataProvider,
   useDashboardData,
 } from "./DashboardDataProvider";
+import AssistantChat from "../assistant/AssistantChat";
+import { AssistantProvider } from "../assistant/AssistantProvider";
 import { useAuth } from "../AuthProvider";
 
 function DashboardContent() {
@@ -76,7 +78,10 @@ function DashboardContent() {
 export default function DashboardLayout() {
   return (
     <DashboardDataProvider>
-      <DashboardContent />
+      <AssistantProvider>
+        <DashboardContent />
+        <AssistantChat />
+      </AssistantProvider>
     </DashboardDataProvider>
   );
 }
