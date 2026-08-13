@@ -8,6 +8,7 @@ import Badge from "../components/Badge";
 import StatusSelect from "../components/StatusSelect";
 import BookingCalendar from "../components/BookingCalendar";
 import ImageGallery from "../components/ImageGallery";
+import InquiryMessageThread from "../components/InquiryMessageThread";
 import { useImages } from "../hooks/useImages";
 import type { InquiryResponseDTO } from "../../../src/DTO/inquiryDTO";
 import type { BookingResponseDTO } from "../../../src/DTO/bookingDTO";
@@ -201,11 +202,21 @@ export default function VendorDetailPage() {
 
       {/* Header card */}
       <Card>
-        <h1 className="text-2xl font-bold text-stone-900">{vendor.name}</h1>
-        <div className="mt-2 flex flex-wrap gap-x-6 gap-y-1 text-sm text-stone-600">
-          {vendor.email && <span>{vendor.email}</span>}
-          {vendor.phone && <span>{vendor.phone}</span>}
-          {vendor.service_type && <span>{vendor.service_type}</span>}
+        <div className="flex items-start justify-between gap-4">
+          <div>
+            <h1 className="text-2xl font-bold text-stone-900">{vendor.name}</h1>
+            <div className="mt-2 flex flex-wrap gap-x-6 gap-y-1 text-sm text-stone-600">
+              {vendor.email && <span>{vendor.email}</span>}
+              {vendor.phone && <span>{vendor.phone}</span>}
+              {vendor.service_type && <span>{vendor.service_type}</span>}
+            </div>
+          </div>
+          <Link
+            to={`/messages?ref_type=vendor&ref_id=${vendor.id}`}
+            className="inline-flex items-center gap-1 text-sm text-rose-600 hover:text-rose-700 shrink-0"
+          >
+            <MessageSquare size={16} /> Messages
+          </Link>
         </div>
       </Card>
 
@@ -264,6 +275,7 @@ export default function VendorDetailPage() {
                   <InquiryRow
                     key={inquiry.id}
                     inquiry={inquiry}
+                    referenceId={vendor.id}
                     isExpanded={expandedInquiry === inquiry.id}
                     onToggle={() =>
                       setExpandedInquiry(
@@ -282,6 +294,7 @@ export default function VendorDetailPage() {
                 <InquiryCard
                   key={inquiry.id}
                   inquiry={inquiry}
+                  referenceId={vendor.id}
                   isExpanded={expandedInquiry === inquiry.id}
                   onToggle={() =>
                     setExpandedInquiry(
@@ -371,11 +384,13 @@ export default function VendorDetailPage() {
 
 function InquiryRow({
   inquiry,
+  referenceId,
   isExpanded,
   onToggle,
   onStatusChange,
 }: {
   inquiry: InquiryResponseDTO;
+  referenceId: number;
   isExpanded: boolean;
   onToggle: () => void;
   onStatusChange: (id: number, status: string) => void;
@@ -418,6 +433,14 @@ function InquiryRow({
                 Updated: {new Date(inquiry.updated_at).toLocaleString()}
               </span>
             </div>
+            <div className="mt-3">
+              <InquiryMessageThread
+                inquiryId={inquiry.id}
+                referenceType="vendor"
+                referenceId={referenceId}
+                clientName={inquiry.client?.username}
+              />
+            </div>
           </td>
         </tr>
       )}
@@ -427,11 +450,13 @@ function InquiryRow({
 
 function InquiryCard({
   inquiry,
+  referenceId,
   isExpanded,
   onToggle,
   onStatusChange,
 }: {
   inquiry: InquiryResponseDTO;
+  referenceId: number;
   isExpanded: boolean;
   onToggle: () => void;
   onStatusChange: (id: number, status: string) => void;
@@ -459,6 +484,14 @@ function InquiryCard({
           <p>Service Type: {inquiry.service_type}</p>
           <p>Created: {new Date(inquiry.created_at).toLocaleString()}</p>
           <p>Updated: {new Date(inquiry.updated_at).toLocaleString()}</p>
+          <div className="pt-1">
+            <InquiryMessageThread
+              inquiryId={inquiry.id}
+              referenceType="vendor"
+              referenceId={referenceId}
+              clientName={inquiry.client?.username}
+            />
+          </div>
         </div>
       )}
     </div>

@@ -6,6 +6,7 @@ export interface NavItem {
   label: string;
   shouldShow: boolean;
   icon: LucideIcon;
+  count?: number;
 }
 
 interface SidebarProps {
@@ -32,6 +33,11 @@ export default function Sidebar({ navItems }: SidebarProps) {
             >
               <item.icon size={20} />
               <span>{item.label}</span>
+              {item.count !== undefined && item.count > 0 && (
+                <span className="ml-auto inline-flex items-center justify-center px-2 py-0.5 text-xs font-medium leading-none text-white bg-rose-600 rounded-full">
+                  {item.count}
+                </span>
+              )}
             </NavLink>
           ))}
       </nav>

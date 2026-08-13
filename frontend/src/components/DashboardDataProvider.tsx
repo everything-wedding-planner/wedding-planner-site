@@ -8,6 +8,8 @@ interface DashboardDataContextType {
   vendors: VendorResponseDTO[] | null;
   venues: VenueResponseDTO[] | null;
   isLoading: boolean;
+  unreadConversationsCount: number;
+  updateUnreadConversationsCount: (newCount: number) => void;
   refetch: () => void;
 }
 
@@ -21,6 +23,8 @@ export const DashboardDataProvider: React.FC<{
   const [company, setCompany] = useState<CompanyResponseDTO | null>(null);
   const [vendors, setVendors] = useState<VendorResponseDTO[] | null>(null);
   const [venues, setVenues] = useState<VenueResponseDTO[] | null>(null);
+  const [unreadConversationsCount, setUnreadConversationsCount] =
+    useState<number>(0);
   const [isLoading, setIsLoading] = useState(true);
 
   const fetchData = () => {
@@ -34,6 +38,26 @@ export const DashboardDataProvider: React.FC<{
         setCompany(data.data.company);
         setVendors(data.data.vendors);
         setVenues(data.data.venues);
+
+        if (data.data.company?.id) {
+          fetch(`/api/conversations/${data.data.company.id}/unread-count`, {
+            credentials: "include",
+          })
+            .then((res) => {
+              if (res.ok) return res.json();
+              throw new Error();
+            })
+            .then((data) => {
+              console.log("Unread conversations count:", data);
+              setUnreadConversationsCount(data.unreadCount);
+            })
+            .catch((error) => {
+              console.error(
+                "Error fetching unread conversations count:",
+                error,
+              );
+            });
+        }
       })
       .catch((error) => {
         setCompany(null);
@@ -48,8 +72,22 @@ export const DashboardDataProvider: React.FC<{
     fetchData();
   }, []);
 
+  const updateUnreadConversationsCount = (newCount: number) => {
+    setUnreadConversationsCount(newCount);
+  };
+
   return (
-    <DashboardDataContext value={{ company, vendors, venues, isLoading, refetch: fetchData }}>
+    <DashboardDataContext
+      value={{
+        company,
+        vendors,
+        venues,
+        isLoading,
+        unreadConversationsCount,
+        updateUnreadConversationsCount,
+        refetch: fetchData,
+      }}
+    >
       {children}
     </DashboardDataContext>
   );

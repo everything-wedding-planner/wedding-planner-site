@@ -9,6 +9,7 @@ import VenueDetailPage from "./views/VenueDetailPage";
 import VendorManagementPage from "./views/VendorManagementPage";
 import VendorDetailPage from "./views/VendorDetailPage";
 import OnboardingPage from "./views/OnboardingPage";
+import MessagesInboxPage from "./views/MessagesInboxPage";
 
 const FrontendRouter = createBrowserRouter([
   {
@@ -46,6 +47,10 @@ const FrontendRouter = createBrowserRouter([
           {
             path: "vendors/:id",
             element: <VendorDetailPage />,
+          },
+          {
+            path: "messages",
+            element: <MessagesInboxPage />,
           },
           {
             index: true,

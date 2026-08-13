@@ -49,14 +49,17 @@ describe("Auth/Middleware", () => {
     });
     expect(logoutRes.status).toBe(200);
 
-    // After logout, the session cookie should be invalidated
-    // Note: With CookieStore, the session data is encrypted in the cookie itself.
-    // After logout, the session.deleteSession() clears the session data,
-    // but the cookie header might still be sent. The session middleware
-    // should handle this by not finding valid session data.
+    // After logout, the server must issue a cleared session cookie. With the
+    // stateless CookieStore the original cookie stays cryptographically valid,
+    // so a client that keeps sending it would still be authenticated. Logout
+    // works by the client discarding the old cookie for the cleared one.
+    const clearedCookie = logoutRes.headers.get("Set-Cookie")?.split(";")[0];
+    expect(clearedCookie).toBeDefined();
+    expect(clearedCookie).toContain("session=");
+
     const meResAfterLogout = await SELF.fetch("http://localhost/api/me", {
       method: "GET",
-      headers: { Cookie: cookie },
+      headers: { Cookie: clearedCookie || "" },
     });
     expect(meResAfterLogout.status).toBe(401);
   });

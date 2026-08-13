@@ -4,6 +4,17 @@ import { SELF } from "cloudflare:test";
 const TEST_PASSWORD = "password123";
 const TEST_HASH = "$2a$10$N9qo8uLOickgx2ZMRZoMyeIjZAgcfl7p92ldGxad68LJZdL17lhWy";
 
+/**
+ * hono-sessions may emit multiple Set-Cookie headers on one response
+ * (an empty session cookie followed by the session cookie containing the
+ * session data). Take the last cookie so authenticated round-trips work.
+ */
+function extractSessionCookie(setCookieHeader: string): string {
+  const parts = setCookieHeader.split(", ");
+  const last = parts[parts.length - 1];
+  return last.split(";")[0].trim();
+}
+
 /** Create a user via the signup API and return the Set-Cookie header */
 export async function signupUser(
   username: string,
@@ -15,7 +26,7 @@ export async function signupUser(
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ name: username, email, password }),
   });
-  const cookie = res.headers.get("Set-Cookie") || "";
+  const cookie = extractSessionCookie(res.headers.get("Set-Cookie") || "");
   return { response: res, cookie };
 }
 
@@ -29,7 +40,7 @@ export async function loginUser(
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ email, password }),
   });
-  const cookie = res.headers.get("Set-Cookie") || "";
+  const cookie = extractSessionCookie(res.headers.get("Set-Cookie") || "");
   return { response: res, cookie };
 }
 
@@ -52,6 +63,22 @@ export async function authPost(
 ): Promise<Response> {
   return SELF.fetch(`http://localhost${url}`, {
     method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      Cookie: cookie,
+    },
+    body: JSON.stringify(body),
+  });
+}
+
+/** Make an authenticated PUT request */
+export async function authPut(
+  url: string,
+  cookie: string,
+  body: unknown,
+): Promise<Response> {
+  return SELF.fetch(`http://localhost${url}`, {
+    method: "PUT",
     headers: {
       "Content-Type": "application/json",
       Cookie: cookie,
@@ -206,4 +233,109 @@ export async function seedVenue(
     )
     .run();
   return { id: result.meta.last_row_id as number, company_id: companyId, ...defaults };
+}
+
+/** Directly seed an inquiry into the DB */
+export async function seedInquiry(
+  db: D1Database,
+  overrides: Partial<{
+    service_id: number;
+    service_type: string;
+    client_id: number;
+    event_date: string;
+    status: string;
+  }> = {},
+) {
+  const defaults = {
+    service_id: 1,
+    service_type: "VENDOR",
+    client_id: 1,
+    event_date: new Date("2026-12-01").toISOString(),
+    status: "NEW",
+    ...overrides,
+  };
+  const result = await db
+    .prepare(
+      "INSERT INTO inquiries (service_id, service_type, client_id, event_date, status, created_at, updated_at) VALUES (?, ?, ?, ?, ?, datetime('now'), datetime('now'))",
+    )
+    .bind(
+      defaults.service_id,
+      defaults.service_type,
+      defaults.client_id,
+      defaults.event_date,
+      defaults.status,
+    )
+    .run();
+  return { id: result.meta.last_row_id as number, ...defaults };
+}
+
+/** Directly seed a conversation into the DB */
+export async function seedConversation(
+  db: D1Database,
+  overrides: Partial<{
+    inquiry_id: number;
+    client_id: number;
+    reference_id: number;
+    reference_type: string;
+    status: string;
+  }> = {},
+) {
+  const defaults = {
+    inquiry_id: 1,
+    client_id: 1,
+    reference_id: 1,
+    reference_type: "vendor",
+    status: "active",
+    ...overrides,
+  };
+  const result = await db
+    .prepare(
+      "INSERT INTO conversations (inquiry_id, client_id, reference_id, reference_type, status, created_at, updated_at) VALUES (?, ?, ?, ?, ?, ?, ?)",
+    )
+    .bind(
+      defaults.inquiry_id,
+      defaults.client_id,
+      defaults.reference_id,
+      defaults.reference_type,
+      defaults.status,
+      new Date().toISOString(),
+      new Date().toISOString(),
+    )
+    .run();
+  return { id: result.meta.last_row_id as number, ...defaults };
+}
+
+/** Directly seed a message into the DB */
+export async function seedMessage(
+  db: D1Database,
+  overrides: Partial<{
+    conversation_id: number;
+    sender_id: number;
+    content: string;
+    read_at: string | null;
+    created_at: string;
+  }> = {},
+) {
+  const defaults = {
+    conversation_id: 1,
+    sender_id: 1,
+    content: `Message ${Date.now()}`,
+    read_at: null,
+    created_at: new Date().toISOString(),
+    ...overrides,
+  };
+  const result = await db
+    .prepare(
+      "INSERT INTO messages (conversation_id, sender_id, content, read_at, created_at, updated_at) VALUES (?, ?, ?, ?, ?, ?)",
+    )
+    .bind(
+      defaults.conversation_id,
+      defaults.sender_id,
+      defaults.content,
+      defaults.read_at,
+      defaults.created_at,
+      defaults.created_at,
+    )
+    .run();
+  return { id: result.meta.last_row_id as number, ...defaults };
 }

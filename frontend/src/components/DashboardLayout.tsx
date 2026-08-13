@@ -5,6 +5,7 @@ import {
   DollarSign,
   Clock,
   Sparkles,
+  MessageSquare,
 } from "lucide-react";
 import Sidebar, { MobileSidebar } from "./Sidebar";
 import type { NavItem } from "./Sidebar";
@@ -15,7 +16,8 @@ import {
 import { useAuth } from "../AuthProvider";
 
 function DashboardContent() {
-  const { company, vendors, venues } = useDashboardData();
+  const { company, vendors, venues, unreadConversationsCount } =
+    useDashboardData();
   const { user } = useAuth();
 
   const navItems: NavItem[] = [
@@ -42,6 +44,13 @@ function DashboardContent() {
       label: "Venues",
       icon: Clock,
       shouldShow: venues !== null && venues.length > 0,
+    },
+    {
+      to: "/messages",
+      label: "Messages",
+      icon: MessageSquare,
+      shouldShow: true,
+      count: unreadConversationsCount,
     },
     {
       to: "/onboarding",

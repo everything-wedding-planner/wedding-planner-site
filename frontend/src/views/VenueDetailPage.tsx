@@ -8,6 +8,7 @@ import Badge from "../components/Badge";
 import StatusSelect from "../components/StatusSelect";
 import BookingCalendar from "../components/BookingCalendar";
 import ImageGallery from "../components/ImageGallery";
+import InquiryMessageThread from "../components/InquiryMessageThread";
 import { useImages } from "../hooks/useImages";
 import type { InquiryResponseDTO } from "../../../src/DTO/inquiryDTO";
 import type { BookingResponseDTO } from "../../../src/DTO/bookingDTO";
@@ -194,11 +195,21 @@ export default function VenueDetailPage() {
 
       {/* Header card */}
       <Card>
-        <h1 className="text-2xl font-bold text-stone-900">{venue.name}</h1>
-        <div className="mt-2 flex flex-wrap gap-x-6 gap-y-1 text-sm text-stone-600">
-          {venue.email && <span>{venue.email}</span>}
-          {venue.phone && <span>{venue.phone}</span>}
-          {venue.address && <span>{venue.address}</span>}
+        <div className="flex items-start justify-between gap-4">
+          <div>
+            <h1 className="text-2xl font-bold text-stone-900">{venue.name}</h1>
+            <div className="mt-2 flex flex-wrap gap-x-6 gap-y-1 text-sm text-stone-600">
+              {venue.email && <span>{venue.email}</span>}
+              {venue.phone && <span>{venue.phone}</span>}
+              {venue.address && <span>{venue.address}</span>}
+            </div>
+          </div>
+          <Link
+            to={`/messages?ref_type=venue&ref_id=${venue.id}`}
+            className="inline-flex items-center gap-1 text-sm text-rose-600 hover:text-rose-700 shrink-0"
+          >
+            <MessageSquare size={16} /> Messages
+          </Link>
         </div>
       </Card>
 
@@ -257,6 +268,7 @@ export default function VenueDetailPage() {
                   <InquiryRow
                     key={inquiry.id}
                     inquiry={inquiry}
+                    referenceId={venue.id}
                     isExpanded={expandedInquiry === inquiry.id}
                     onToggle={() =>
                       setExpandedInquiry(
@@ -275,6 +287,7 @@ export default function VenueDetailPage() {
                 <InquiryCard
                   key={inquiry.id}
                   inquiry={inquiry}
+                  referenceId={venue.id}
                   isExpanded={expandedInquiry === inquiry.id}
                   onToggle={() =>
                     setExpandedInquiry(
@@ -364,11 +377,13 @@ export default function VenueDetailPage() {
 
 function InquiryRow({
   inquiry,
+  referenceId,
   isExpanded,
   onToggle,
   onStatusChange,
 }: {
   inquiry: InquiryResponseDTO;
+  referenceId: number;
   isExpanded: boolean;
   onToggle: () => void;
   onStatusChange: (id: number, status: string) => void;
@@ -411,6 +426,14 @@ function InquiryRow({
                 Updated: {new Date(inquiry.updated_at).toLocaleString()}
               </span>
             </div>
+            <div className="mt-3">
+              <InquiryMessageThread
+                inquiryId={inquiry.id}
+                referenceType="venue"
+                referenceId={referenceId}
+                clientName={inquiry.client?.username}
+              />
+            </div>
           </td>
         </tr>
       )}
@@ -420,11 +443,13 @@ function InquiryRow({
 
 function InquiryCard({
   inquiry,
+  referenceId,
   isExpanded,
   onToggle,
   onStatusChange,
 }: {
   inquiry: InquiryResponseDTO;
+  referenceId: number;
   isExpanded: boolean;
   onToggle: () => void;
   onStatusChange: (id: number, status: string) => void;
@@ -452,6 +477,14 @@ function InquiryCard({
           <p>Service Type: {inquiry.service_type}</p>
           <p>Created: {new Date(inquiry.created_at).toLocaleString()}</p>
           <p>Updated: {new Date(inquiry.updated_at).toLocaleString()}</p>
+          <div className="pt-1">
+            <InquiryMessageThread
+              inquiryId={inquiry.id}
+              referenceType="venue"
+              referenceId={referenceId}
+              clientName={inquiry.client?.username}
+            />
+          </div>
         </div>
       )}
     </div>

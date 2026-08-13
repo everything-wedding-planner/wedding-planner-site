@@ -79,4 +79,29 @@ VALUES
     (5, 1, 'VENDOR', 5, '2027-03-01', 'NEW'),
     (6, 2, 'VENDOR', 6, '2027-06-15', 'NEW');
 
+
+
+
+INSERT OR IGNORE INTO conversations (id, inquiry_id, client_id, reference_id, reference_type, created_at)
+VALUES
+    (1, 1, 5, 1, 'VENDOR', '2026-08-01'),
+    (2, 2, 5, 3, 'VENUE', '2026-08-02'),
+    (3, 3, 6, 2, 'VENDOR', '2026-08-03'),
+    (4, 4, 6, 4, 'VENUE', '2026-08-04'),
+    (5, 5, 5, 1, 'VENDOR', '2026-08-05');
+
+
+INSERT OR IGNORE INTO messages (id, conversation_id, sender_id, content, created_at)
+VALUES
+    (1, 1, 5, 'Hello, I am interested in your photography services for my wedding. Can we discuss availability?', '2026-08-01 10:00:00'),
+    (3, 2, 5, 'I am interested in your venue for my wedding. Can you provide more details about the space and availability?', '2026-08-02 11:00:00'),
+    (4, 2, 3, 'Hello! Thank you for your interest. The venue is available on your requested date. I can send you a brochure with more details.', '2026-08-02 11:20:00'),
+    (5, 3, 6, 'Hi, I would like to inquire about your floral services for my wedding. Can we discuss options and pricing?', '2026-08-03 09:30:00'),
+    (6, 3, 2, 'Hello! Thank you for reaching out. I would be happy to discuss our floral services and provide a quote. When would you like to schedule a call?', '2026-08-03 09:45:00'),
+    (7, 4, 6, 'I am interested in your venue for my wedding. Can you provide more information about the space and availability?', '2026-08-04 14:00:00'),
+    (8, 4, 4, 'Hi! Thank you for your interest. The venue is available on your requested date. I can send you a brochure with more details.', '2026-08-04 14:15:00'),
+    (9, 5, 5, 'Hello again! I wanted to follow up on my previous inquiry about your photography services. Are you still available on my wedding date?', '2026-08-05 10:30:00'),
+    (10, 5, 1, 'Hi! Yes, I am still available on your wedding date. Let me know if you would like to schedule a call to discuss further.', '2026-08-05 10:45:00');
+
+
 PRAGMA foreign_keys = ON;
