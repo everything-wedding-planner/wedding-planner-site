@@ -39,4 +39,18 @@
   --color-error: #dc2626;          /* red-600 */
   --color-error-light: #fef2f2;    /* red-50 */
   --color-error-text: #991b1b;     /* red-800 */
+
+  /* Animations */
+  --animate-typing: typing-bounce 1s ease-in-out infinite;
+
+  @keyframes typing-bounce {
+    0%,
+    60%,
+    100% {
+      transform: translateY(0);
+    }
+    30% {
+      transform: translateY(-3px);
+    }
+  }
 }
