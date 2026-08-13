@@ -16,7 +16,8 @@ import {
 import { useAuth } from "../AuthProvider";
 
 function DashboardContent() {
-  const { company, vendors, venues } = useDashboardData();
+  const { company, vendors, venues, unreadConversationsCount } =
+    useDashboardData();
   const { user } = useAuth();
 
   const navItems: NavItem[] = [
@@ -49,6 +50,7 @@ function DashboardContent() {
       label: "Messages",
       icon: MessageSquare,
       shouldShow: true,
+      count: unreadConversationsCount,
     },
     {
       to: "/onboarding",

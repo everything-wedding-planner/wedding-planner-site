@@ -94,7 +94,6 @@ VALUES
 INSERT OR IGNORE INTO messages (id, conversation_id, sender_id, content, created_at)
 VALUES
     (1, 1, 5, 'Hello, I am interested in your photography services for my wedding. Can we discuss availability?', '2026-08-01 10:00:00'),
-    (2, 1, 1, 'Hi! Thank you for reaching out. I am available on your wedding date. Let me know if you would like to schedule a call to discuss details.', '2026-08-01 10:15:00'),
     (3, 2, 5, 'I am interested in your venue for my wedding. Can you provide more details about the space and availability?', '2026-08-02 11:00:00'),
     (4, 2, 3, 'Hello! Thank you for your interest. The venue is available on your requested date. I can send you a brochure with more details.', '2026-08-02 11:20:00'),
     (5, 3, 6, 'Hi, I would like to inquire about your floral services for my wedding. Can we discuss options and pricing?', '2026-08-03 09:30:00'),

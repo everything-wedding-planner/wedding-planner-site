@@ -189,23 +189,33 @@ function ConversationList({
     );
   }
 
+  const { unreadConversationsCount, updateUnreadConversationsCount } =
+    useDashboardData();
+
   return (
     <ul className="divide-y divide-stone-100 overflow-y-auto max-h-[300px] md:max-h-[45vh]">
       {conversations.map((conversation) => {
         const lastMessage =
           conversation.messages[conversation.messages.length - 1];
         const isActive = conversation.id === activeConversationId;
-        const hasUnread =
+        const [hasUnread, setHasUnread] = useState(
           lastMessage !== undefined &&
-          currentUserId !== null &&
-          lastMessage.sender_id !== currentUserId &&
-          lastMessage.read_at === null;
+            currentUserId !== null &&
+            lastMessage.sender_id !== currentUserId &&
+            lastMessage.read_at === null,
+        );
 
         return (
           <li key={conversation.id}>
             <button
               type="button"
-              onClick={() => onSelect(conversation.id)}
+              onClick={() => {
+                if (hasUnread) {
+                  updateUnreadConversationsCount(unreadConversationsCount - 1);
+                  setHasUnread(false); // Update the local state to prevent double decrement
+                }
+                onSelect(conversation.id);
+              }}
               className={`w-full text-left px-4 py-3 flex items-start gap-2 hover:bg-stone-50 ${
                 isActive ? "bg-rose-50" : ""
               }`}

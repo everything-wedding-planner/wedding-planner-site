@@ -31,6 +31,18 @@ export class MessageModel {
     return results.results;
   }
 
+  async getLastMessageByConversationId(
+    conversation_id: number,
+  ): Promise<messageRow | null> {
+    const results = await this.db
+      .prepare(
+        "SELECT * FROM messages WHERE conversation_id = ? ORDER BY created_at DESC LIMIT 1",
+      )
+      .bind(conversation_id)
+      .first<messageRow>();
+    return results || null;
+  }
+
   async getMessagesByConversationIdSince(
     conversation_id: number,
     since: string,

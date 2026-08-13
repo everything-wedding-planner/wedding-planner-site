@@ -30,13 +30,14 @@ export class ConversationModel {
   async getConversationsByReference(
     reference_id: number,
     reference_type: string,
-  ): Promise<conversationRow[]> {
+  ): Promise<conversationRow[] | null> {
     const result = await this.db
       .prepare(
         "SELECT * FROM conversations WHERE reference_id = ? AND reference_type = ?",
       )
       .bind(reference_id, reference_type.toUpperCase())
       .all<conversationRow>();
+
     return result.results;
   }
 

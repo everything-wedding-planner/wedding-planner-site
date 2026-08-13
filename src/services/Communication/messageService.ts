@@ -29,6 +29,20 @@ export class MessageService {
     return messageDTO;
   }
 
+  async getLastMessageByConversationId(
+    conversation_id: number,
+  ): Promise<messageResponseDTO | null> {
+    console.log("Fetching last message for conversation_id:", conversation_id);
+    const message =
+      await this.messageModel.getLastMessageByConversationId(conversation_id);
+
+    if (!message) {
+      return null;
+    }
+
+    return toMessageResponseDTO(message);
+  }
+
   async getMessagesByConversationIdSince(
     conversation_id: number,
     since: string,

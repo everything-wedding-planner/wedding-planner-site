@@ -80,6 +80,22 @@ conversationRoute.get("/reference/:reference_type/:reference_id", async (c) => {
   return c.json(conversationDTOs);
 });
 
+conversationRoute.get("/:company_id/unread-count", async (c) => {
+  const session = c.get("session");
+  const userId = session.get("userId");
+  const company_id = Number(c.req.param("company_id"));
+
+  if (!company_id) {
+    return c.json({ error: "Missing required parameters" }, 400);
+  }
+
+  const db = c.env.DB;
+  const conversationService = new ConversationService(db);
+  const unreadCount =
+    await conversationService.getUnreadCompanyConversationsCount(company_id);
+  return c.json({ unreadCount });
+});
+
 conversationRoute.get("/:id/messages", async (c) => {
   const session = c.get("session");
   const userId = session.get("userId");

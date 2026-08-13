@@ -11,8 +11,12 @@ import {
 
 import { MessageService } from "./messageService";
 import { CompanyModel, CompanyServiceTypes } from "../../models/companyModel";
+
 import { VendorModel } from "../../models/vendorModel";
+import { VendorService } from "../vendorService";
+
 import { VenueModel } from "../../models/venueModel";
+import { VenueService } from "../venueService";
 
 export class ConversationService {
   private conversationModel: ConversationModel;
@@ -124,6 +128,84 @@ export class ConversationService {
     }
 
     return conversationDTOs;
+  }
+
+  async getUnreadCompanyConversationsCount(
+    company_id: number,
+  ): Promise<number> {
+    const vendorService = new VendorService(this.db);
+    const venueService = new VenueService(this.db);
+
+    const vendors = await vendorService.getVendorByCompanyId(company_id);
+    const venues = await venueService.getVenueByCompanyId(company_id);
+
+    let unreadCount = 0;
+    if (vendors && !(vendors instanceof Error)) {
+      for (const vendor of vendors) {
+        const conversations =
+          await this.conversationModel.getConversationsByReference(
+            vendor.id,
+            CompanyServiceTypes.vendor,
+          );
+
+        if (!conversations) {
+          continue;
+        }
+
+        for (const conversation of conversations) {
+          const messageService = new MessageService(this.db);
+          const message: messageResponseDTO | null =
+            await messageService.getLastMessageByConversationId(
+              conversation.id,
+            );
+          console.log(
+            "Last message for conversation",
+            conversation.id,
+            ":",
+            message,
+          );
+          if (
+            message &&
+            message.read_at === null &&
+            message.sender_id !== company_id
+          ) {
+            unreadCount++;
+          }
+        }
+      }
+    }
+
+    if (venues && !(venues instanceof Error)) {
+      console.log("Venues:", venues);
+      for (const venue of venues) {
+        const conversations =
+          await this.conversationModel.getConversationsByReference(
+            venue.id,
+            CompanyServiceTypes.venue,
+          );
+
+        if (!conversations) {
+          continue;
+        }
+
+        for (const conversation of conversations) {
+          const messageService = new MessageService(this.db);
+          const message: messageResponseDTO | null =
+            await messageService.getLastMessageByConversationId(
+              conversation.id,
+            );
+          if (
+            message &&
+            message.read_at === null &&
+            message.sender_id !== company_id
+          ) {
+            unreadCount++;
+          }
+        }
+      }
+    }
+
+    return unreadCount;
   }
 
   async createConversation(
