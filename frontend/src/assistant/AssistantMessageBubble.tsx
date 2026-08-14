@@ -33,7 +33,6 @@ export default function AssistantMessageBubble({
   message,
 }: AssistantMessageBubbleProps) {
   const isUser = message.role === "user";
-
   return (
     <div className={`flex flex-col ${isUser ? "items-end" : "items-start"}`}>
       <div
@@ -43,11 +42,9 @@ export default function AssistantMessageBubble({
             : "bg-white border border-stone-200 text-stone-900 rounded-2xl rounded-bl-sm"
         }`}
       >
-        {isUser || !message.blocks
+        {isUser || !message.blocks || message.blocks.length === 0
           ? message.content
-          : message.blocks.map((block, index) =>
-              renderBlock(block, index),
-            )}
+          : message.blocks.map((block, index) => renderBlock(block, index))}
       </div>
       <span
         className={`text-[10px] text-stone-400 mt-0.5 ${

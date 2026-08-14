@@ -13,10 +13,12 @@
     "db:migrate": "wrangler d1 migrations apply wedding-planner --local"
   },
   "dependencies": {
+    "@cloudflare/ai-utils": "^1.0.1",
     "@cloudflare/workers-types": "^4.20250101.0",
     "bcryptjs": "^3.0.3",
     "hono": "^4.12.27",
-    "hono-sessions": "^0.8.1"
+    "hono-sessions": "^0.8.1",
+    "workers-ai-provider": "^4.0.0"
   },
   "devDependencies": {
     "@cloudflare/vitest-pool-workers": "^0.18.0",

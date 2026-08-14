@@ -9,7 +9,8 @@ function createMessageId() {
   return `assistant-msg-${messageSeq}`;
 }
 
-function replyToText(reply: AssistantReply): string {
+function replyToText(reply: AssistantReply | string): string {
+  if (typeof reply === "string") return reply;
   return reply.blocks
     .map((block) => {
       if (block.type === "bullets") return block.items?.join("\n") ?? "";
@@ -58,7 +59,7 @@ export const AssistantProvider: React.FC<{ children: React.ReactNode }> = ({
             id: createMessageId(),
             role: "assistant",
             content: replyToText(reply),
-            blocks: reply.blocks,
+            blocks: typeof reply === "string" ? [] : reply.blocks,
             createdAt: new Date().toISOString(),
           },
         ]);

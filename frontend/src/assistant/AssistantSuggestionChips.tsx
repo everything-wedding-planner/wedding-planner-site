@@ -3,7 +3,7 @@ interface AssistantSuggestionChipsProps {
 }
 
 const SUGGESTIONS = [
-  "Summarize my messages",
+  "Please find me the bookings for my company, and summarize the results.",
   "What's coming up next week?",
   "How are my listings performing?",
 ];

@@ -80,6 +80,24 @@ export class BookingService {
     return BookingDTOs;
   }
 
+  async getAllBookingsByCompanyId(
+    companyId: number,
+  ): Promise<BookingResponseDTO[] | null> {
+    const bookings =
+      await this.bookingModel.getAllBookingsByCompanyId(companyId);
+    if (!bookings) {
+      return null;
+    }
+
+    const bookingDTOs: BookingResponseDTO[] = [];
+    for (const booking of bookings) {
+      const bookingDTO = await toBookingResponseDTO(booking, this.db);
+      bookingDTOs.push(bookingDTO);
+    }
+
+    return bookingDTOs;
+  }
+
   async createBooking(
     clientId: number,
     serviceType: (typeof CompanyServiceTypes)[keyof typeof CompanyServiceTypes],

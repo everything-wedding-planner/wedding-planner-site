@@ -158,12 +158,7 @@ export class ConversationService {
             await messageService.getLastMessageByConversationId(
               conversation.id,
             );
-          console.log(
-            "Last message for conversation",
-            conversation.id,
-            ":",
-            message,
-          );
+
           if (
             message &&
             message.read_at === null &&
@@ -176,7 +171,6 @@ export class ConversationService {
     }
 
     if (venues && !(venues instanceof Error)) {
-      console.log("Venues:", venues);
       for (const venue of venues) {
         const conversations =
           await this.conversationModel.getConversationsByReference(

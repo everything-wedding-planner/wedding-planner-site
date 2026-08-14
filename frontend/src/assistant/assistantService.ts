@@ -1,7 +1,7 @@
 import type { AssistantReply } from "./types";
 
 export interface AssistantService {
-  getResponse(input: string): Promise<AssistantReply>;
+  getResponse(input: string): Promise<AssistantReply | string>;
 }
 
 const REPLY_DELAY_MS = 600;
@@ -98,7 +98,11 @@ const fallbackReply: AssistantReply = {
 function matchReply(input: string): AssistantReply {
   const text = input.toLowerCase();
   if (/(summar|conversation|message)/.test(text)) return summaryReply;
-  if (/(deadline|upcoming|next week|calendar|coming up|schedule|follow)/.test(text))
+  if (
+    /(deadline|upcoming|next week|calendar|coming up|schedule|follow)/.test(
+      text,
+    )
+  )
     return deadlinesReply;
   if (/(perform|insight|analytics|view|stat|trend|conversion)/.test(text))
     return insightsReply;
@@ -112,10 +116,34 @@ export class MockAssistantService implements AssistantService {
   }
 }
 
-export const assistantService: AssistantService = new MockAssistantService();
+export class RealAssistantService implements AssistantService {
+  async getResponse(input: string): Promise<string> {
+    try {
+      const res = await fetch(
+        "/api/assistant/response?prompt=" + encodeURIComponent(input),
+        {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          credentials: "include",
+        },
+      );
+      if (!res.ok) throw new Error("Failed to fetch assistant response");
+      const data = await res.json();
+
+      return data;
+    } catch (error) {
+      console.error("Error fetching assistant response:", error);
+      throw error;
+    }
+  }
+}
+
+export const assistantService: AssistantService = new RealAssistantService();
 
 export async function getAssistantResponse(
   input: string,
-): Promise<AssistantReply> {
+): Promise<AssistantReply | string> {
   return assistantService.getResponse(input);
 }

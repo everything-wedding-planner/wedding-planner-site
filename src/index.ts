@@ -12,6 +12,7 @@ import { inquiryRoute } from "./controllers/inquiryController";
 import { imageRoute } from "./controllers/imageController";
 import { messageRoute } from "./controllers/Communication/messageController";
 import { conversationRoute } from "./controllers/Communication/conversationController";
+import { assistantRoute } from "./controllers/AssistantController";
 import type { AppBindings } from "./env";
 
 import { validUserMiddleware, customSessionMiddleware } from "./Middleware";
@@ -33,6 +34,7 @@ app.route("/api/inquiries", inquiryRoute);
 app.route("/api/images", imageRoute);
 app.route("/api/messages", messageRoute);
 app.route("/api/conversations", conversationRoute);
+app.route("/api/assistant", assistantRoute);
 
 app.get("/api/me", async (c) => {
   const session = c.get("session");
