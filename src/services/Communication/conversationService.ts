@@ -89,6 +89,72 @@ export class ConversationService {
     return false;
   }
 
+  async getConversationsByCompanyId(
+    company_id: number,
+  ): Promise<conversationResponseDTO[]> {
+    const vendorService = new VendorService(this.db);
+    const venueService = new VenueService(this.db);
+
+    const vendors = await vendorService.getVendorByCompanyId(company_id);
+    const venues = await venueService.getVenueByCompanyId(company_id);
+
+    const conversationDTOs: conversationResponseDTO[] = [];
+
+    if (vendors && !(vendors instanceof Error)) {
+      for (const vendor of vendors) {
+        const conversations =
+          await this.conversationModel.getConversationsByReference(
+            vendor.id,
+            CompanyServiceTypes.vendor,
+          );
+
+        if (!conversations) {
+          continue;
+        }
+
+        for (const conversation of conversations) {
+          const messageService = new MessageService(this.db);
+          const messages: messageResponseDTO[] =
+            await messageService.getMessagesByConversationId(conversation.id);
+          const conversationDTO = await toConversationResponseDTO(
+            conversation,
+            messages,
+            this.db,
+          );
+          conversationDTOs.push(conversationDTO);
+        }
+      }
+    }
+
+    if (venues && !(venues instanceof Error)) {
+      for (const venue of venues) {
+        const conversations =
+          await this.conversationModel.getConversationsByReference(
+            venue.id,
+            CompanyServiceTypes.venue,
+          );
+
+        if (!conversations) {
+          continue;
+        }
+
+        for (const conversation of conversations) {
+          const messageService = new MessageService(this.db);
+          const messages: messageResponseDTO[] =
+            await messageService.getMessagesByConversationId(conversation.id);
+          const conversationDTO = await toConversationResponseDTO(
+            conversation,
+            messages,
+            this.db,
+          );
+          conversationDTOs.push(conversationDTO);
+        }
+      }
+    }
+
+    return conversationDTOs;
+  }
+
   async getConversationById(
     id: number,
   ): Promise<conversationResponseDTO | null> {

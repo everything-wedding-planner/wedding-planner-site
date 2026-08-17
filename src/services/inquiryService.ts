@@ -34,6 +34,66 @@ export class InquiryService {
     return inquiryCount;
   }
 
+  async getAllInquiriesForCompanyId(
+    company_id: number,
+  ): Promise<InquiryResponseDTO[] | Error> {
+    let inquiries: InquiryRow[] = [];
+
+    // This can be moved into its own CompanyService
+    const companyModel = new CompanyModel(this.db);
+    const companyData = await companyModel.getCompanyById(company_id);
+    if (!companyData) {
+      return Error("Company not found for the given user ID");
+    }
+
+    // This can be moved into its own VendorService or VenueService
+    const vendorModel = new VendorModel(this.db);
+    const venueModel = new VenueModel(this.db);
+
+    const vendorData = await vendorModel.getVendorsByCompanyId(companyData.id);
+    const venueData = await venueModel.getVenuesByCompanyId(companyData.id);
+
+    const vendorService = vendorData.length > 0 ? vendorData : null;
+    const venueService = venueData.length > 0 ? venueData : null;
+
+    if (!vendorService && !venueService) {
+      return Error("No vendor or venue found for the given company ID");
+    }
+
+    if (vendorService) {
+      for (const vendor of vendorService) {
+        let vendorInquiries =
+          await this.inquiryModel.getAllInquiriesByServiceId(
+            vendor.id,
+            CompanyServiceTypes.vendor,
+          );
+        if (vendorInquiries) {
+          inquiries = inquiries.concat(vendorInquiries);
+        }
+      }
+    }
+
+    if (venueService) {
+      for (const venue of venueService) {
+        let venueInquiries = await this.inquiryModel.getAllInquiriesByServiceId(
+          venue.id,
+          CompanyServiceTypes.venue,
+        );
+        if (venueInquiries) {
+          inquiries = inquiries.concat(venueInquiries);
+        }
+      }
+    }
+
+    const inquiryDTOs: InquiryResponseDTO[] = [];
+    for (const inquiry of inquiries) {
+      const inquiryDTO = await toInquiryResponseDTO(inquiry, this.db);
+      inquiryDTOs.push(inquiryDTO);
+    }
+
+    return inquiryDTOs;
+  }
+
   async getAllInquiriesForAccountUser(
     userId: number,
   ): Promise<InquiryResponseDTO[] | Error> {
